@@ -1,0 +1,35 @@
+{
+  "company": "kestrel",
+  "type": "plan",
+  "seed": 1,
+  "model": "gemini-3.5-flash-lite",
+  "decisions": [
+    {
+      "week": 8,
+      "target": "everyone",
+      "actions": [
+        {
+          "action": "Hotel rooms held for stranded passengers, whatever the cause",
+          "level": "on"
+        }
+      ],
+      "message": "If you are stranded overnight because of a canceled or delayed Kestrel flight during the holidays, whatever the cause, we are holding hotel rooms for you in Orlando and Philadelphia. Ask our airport staff or use the app.",
+      "channels": [
+        "app",
+        "email",
+        "text"
+      ],
+      "why": "Care: no night on the airport floor at Christmas.\nRemoves the worst experience.\n$0.2M."
+    }
+  ],
+  "surprises": [],
+  "decision_set": "single_hotel_w8",
+  "customer_mix": {
+    "_note": "TEAM ASSUMPTION, share of Kestrel passengers by group (no public split: research section 5 [GAP]). Dossier: 'Price-conscious travelers: families visiting relatives, students, vacationers, and some small business travelers' plus agencies booking group tickets. Families first (holiday season, Christmas week 97% booked), vacationers next, students on winter break, 'some' business, agencies small but each books a whole group. Shares are passengers, not bookings. Each persona weighs its group's share split evenly over that group's personas.",
+    "families visiting relatives": 0.35,
+    "vacationers": 0.3,
+    "students": 0.15,
+    "business travelers": 0.1,
+    "travel agencies": 0.1
+  }
+}

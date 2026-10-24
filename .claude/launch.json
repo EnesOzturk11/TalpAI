@@ -1,0 +1,13 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "kestrel-sim",
+      "runtimeExecutable": "/usr/bin/env",
+      "runtimeArgs": ["SSL_CERT_FILE=/etc/ssl/cert.pem",
+                      "/Users/enesozturk/Documents/GitHub/TalpAI/.venv/bin/python",
+                      "/Users/enesozturk/Documents/GitHub/TalpAI/lab/code/server.py", "8765"],
+      "port": 8765
+    }
+  ]
+}

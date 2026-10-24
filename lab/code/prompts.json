@@ -1,0 +1,102 @@
+{
+  "model": "gemini-3.5-flash-lite",
+  "temperature": 1.0,
+  "thinking_budget": null,
+  "workers": 25,
+  "company": "Kestrel Air",
+
+  "persona_groups": {
+    "vacationers": 10,
+    "families visiting relatives": 10,
+    "students": 10,
+    "business travelers": 10,
+    "travel agencies": 10
+  },
+
+  "_persona_fields_note": "Draft fields for 'Draft personas/ with Gemini', by catalog section (03-audience-attributes.md) plus J for the dossier's sector attributes. {field: description}. Empty section = left out on purpose; say why in TEAM_DOC. The parser accepts any field you add by hand in personas/*.md.",
+  "persona_fields": {
+    "A. Demographic": {
+      "age": "age in years",
+      "gender": "gender",
+      "state": "US state, two letters",
+      "place": "the city, suburb, small town or rural area they live in",
+      "household": "household size and who lives there",
+      "children": "children and their ages, or none",
+      "occupation": "occupation",
+      "employment_status": "full-time, part-time, gig, self-employed, retired or student",
+      "household_income_band": "under $35k, $35-60k, $60-100k, $100-150k or over $150k",
+      "owns_a_car": "yes or no"
+    },
+    "B. Life story": {
+      "customer_since": "how long they have been a Kestrel customer",
+      "past_bad_experience": "a past bad experience with Kestrel or a rival airline, or none",
+      "recent_life_event": "new job, move, wedding, baby, retirement, layoff, or none",
+      "family_far_away": "who, and where"
+    },
+    "C. Values and attitudes": {
+      "values_most": "security, freedom, saving, status, family or convenience",
+      "trust_in_institutions": "low, medium or high",
+      "price_consciousness": "low, medium or high",
+      "brand_loyalty": "low, medium or high",
+      "sense_of_fairness": "how strongly they react to being treated unfairly",
+      "need_for_control": "low, medium or high"
+    },
+    "D. Behavior": {
+      "preferred_channel": "app, website, phone or chat",
+      "complaint_history": "how often they have complained to companies",
+      "writes_reviews": "never, sometimes or often",
+      "also_uses_a_rival": "which airline, or none",
+      "plans_ahead": "plans ahead or decides at the last minute"
+    },
+    "E. Emotions and reactions": {
+      "baseline_anxiety": "low, medium or high",
+      "how_fast_they_get_angry": "slow, medium or fast",
+      "patience_when_waiting": "low, medium or high",
+      "tendency_to_forgive": "low, medium or high",
+      "tolerance_for_uncertainty": "low, medium or high"
+    },
+    "F. Social and information": {
+      "news_sources": "where they hear news (family group chat, Facebook, X, Instagram, TikTok, Reddit, local TV...)",
+      "circle_size": "small, medium or large",
+      "leads_or_follows_opinions": "leads or follows",
+      "rumors": "believes rumors or checks them"
+    },
+    "G. Money pressure": {
+      "savings": "none, some or comfortable",
+      "paycheck_to_paycheck": "yes or no",
+      "who_pays": "they, their parents or their employer"
+    },
+    "H. What they can do": {
+      "usual_reactions": "what they usually do when a company lets them down: complain in the app, call support, post a review, file with the DOT, post on social media, tell friends, dispute the charge, switch, wait and see, do nothing"
+    },
+    "I. Lifestyle and personal details": {},
+    "J. Kestrel Air (sector)": {
+      "how_often_they_fly": "trips per year",
+      "reason_for_the_trip": "why they fly Kestrel in these ten weeks",
+      "route": "domestic or mexico_caribbean",
+      "trip_weeks": "weeks 1-10 with a Kestrel flight booked; most people 1 or 2",
+      "fixed_or_flexible_dates": "fixed or flexible",
+      "travels_with_children_or_elderly_parents": "who travels with them",
+      "needs_help_at_the_airport": "none, wheelchair, child flying alone...",
+      "loyalty_tier": "none or the tier",
+      "afraid_of_flying": "yes or no",
+      "knows_refund_rights": "yes or no",
+      "books_via": "agency or online",
+      "checks_a_bag": "yes or no",
+      "how_they_get_to_the_airport": "car, ride, transit...",
+      "tolerance_for_connections": "low, medium or high",
+      "employer_pays": "yes or no"
+    }
+  },
+
+  "persona_gen": "You create one realistic, non-stereotyped US customer of Kestrel Air, a fictional low-cost airline with bases in Orlando and Philadelphia (75% US flights, 25% Mexico/Caribbean; average fare $120 US, $210 Mexico/Caribbean). Many customers fly Kestrel twice a year and other airlines the rest of the time.\n\nGroup: $group\nVariation hints (follow them): $hint\nPeople already created in this group (make this one clearly different):\n$existing\n\nThe ten weeks run Nov 2 to Jan 10. Week 4 is Thanksgiving, week 8 (Dec 21-27) is Christmas and is 97% booked, week 9 is New Year. Fill every field of every section; sections follow the audience attribute catalog (A-I) and the airline's sector attributes (J). trip_weeks lists the weeks (1-10) in which this person has a Kestrel flight booked; most people have 1 or 2. Make attributes fit together (income, who pays, patience, news sources), but avoid stereotypes. For 'travel agencies' the persona is the agent who books group tickets; describe their typical group.\n\nReturn JSON only.",
+
+  "persona_system": "You are $name, $age, from $home ($group). You are a customer of $company (a fictional US low-cost airline). Stay in character: speak and decide as this person would, with their money, patience and habits. Do not be more rational, calm or informed than they are.\n\nYour profile:\n$profile\n$custom",
+
+  "weekly": "It is week $week of 10 ($dates).\n\n== Your situation ==\n$trip\n\n== What you saw or heard this week ==\n$events\n\n== Messages from $company ==\n$messages\n\n== Talks with people you know ==\n$heard\n\n== Your notes from earlier weeks ==\n$memory\n\nHow $company handles problems by default: $bau\n\nDecide what you do this week, as yourself. Pick only the actions you would really take. 'status' is about your Kestrel travel plans right now: 'flies as planned' (plans unchanged, including if you have no flight this week), 'rebooked' (you are on a different Kestrel flight than first booked), 'moved to another airline', or 'canceled the trip'. 'blame' is who you hold responsible for any trouble you saw. Return JSON only.",
+
+  "chat": "Two people who know each other talk this week ($dates, week $week of 10). Write a short, natural conversation (4 to 6 lines in total) as they would really talk, about whatever is on their mind, including $company if it comes up. Do not invent events that are not listed below.\n\nA: $a_name ($a_group). $a_profile\nA this week: $a_state\n\nB: $b_name ($b_group). $b_profile\nB this week: $b_state\n\nThen write what each of them takes away from the talk, in one sentence each. Return JSON only.",
+
+  "probe": "$when_text Answer these eight questions as yourself, each with a whole number from 1 to 5.\n1a How much do you trust $company? 1 = not at all, 5 = completely.\n1b \"I can count on $company to treat me right.\" 1 = strongly disagree, 5 = strongly agree.\n2a How likely are you to keep using $company over the next three months? 1 = very unlikely, 5 = very likely.\n2b \"I am thinking about leaving $company.\" 1 = strongly disagree, 5 = strongly agree.\n3a How likely are you to recommend $company to a friend or colleague? 1 = very unlikely, 5 = very likely.\n3b If a friend asked you about $company today, what would you tell them? 1 = stay away, 5 = go for it.\n4a How fairly has $company treated you? 1 = very unfairly, 5 = very fairly.\n4b \"$company takes advantage of people like me.\" 1 = strongly disagree, 5 = strongly agree.\nReturn JSON only, keys q1a to q4b.",
+  "_note": "One set of templates for every persona. Per-persona text lives in personas/<id>.md under '### custom'; the dashboard fills $profile and $custom from there on every call."
+}

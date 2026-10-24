@@ -1,0 +1,39 @@
+{
+  "company": "kestrel",
+  "type": "plan",
+  "seed": 1,
+  "model": "gemini-3.5-flash-lite",
+  "decisions": [
+    {
+      "week": 4,
+      "target": "everyone",
+      "actions": [
+        {
+          "action": "Merge low-load flights, announced at least 7 days ahead (passengers moved to other flights)",
+          "level": "on"
+        }
+      ],
+      "message": "Kestrel update: The FAA and our engine maker have asked all airlines to inspect a part on one engine type as a precaution. Some of our aircraft use this engine. No Kestrel aircraft has had a problem with this part. Inspections start this week and may take some aircraft out of service for a short time. If a check affects your flight, we will text you with your options at least 24 hours ahead. Safety comes first, always. Questions? Reply HELP or open the app.",
+      "channels": [
+        "text",
+        "app",
+        "email"
+      ],
+      "why": "Passengers saw the TikTok video before they heard from us.\nSay what is known and what is not; promise only notice, not outcomes.\nCheapest action on the menu so the message can go out."
+    }
+  ],
+  "surprises": [
+    "The engine inspection"
+  ],
+  "surprise_variant": "as written",
+  "world_patch": {},
+  "decision_set": "D_engine_info_merge",
+  "customer_mix": {
+    "_note": "TEAM ASSUMPTION, share of Kestrel passengers by group (no public split: research section 5 [GAP]). Dossier: 'Price-conscious travelers: families visiting relatives, students, vacationers, and some small business travelers' plus agencies booking group tickets. Families first (holiday season, Christmas week 97% booked), vacationers next, students on winter break, 'some' business, agencies small but each books a whole group. Shares are passengers, not bookings. Each persona weighs its group's share split evenly over that group's personas.",
+    "families visiting relatives": 0.35,
+    "vacationers": 0.3,
+    "students": 0.15,
+    "business travelers": 0.1,
+    "travel agencies": 0.1
+  }
+}

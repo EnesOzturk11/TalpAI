@@ -1,0 +1,66 @@
+{
+  "company": "kestrel",
+  "type": "plan",
+  "seed": 2,
+  "model": "gemini-3.5-flash-lite",
+  "decisions": [
+    {
+      "week": 7,
+      "target": "everyone",
+      "actions": [
+        {
+          "action": "Backup ground handling contract at both bases for the strike days",
+          "level": "on"
+        },
+        {
+          "action": "Lease an aircraft with crew for 2 weeks",
+          "level": "2 aircraft"
+        }
+      ],
+      "message": "Workers at our ground handling contractor plan a 48-hour strike in Orlando and Philadelphia on December 22-23. We have hired backup ground crews at both airports and leased two extra aircraft with crews for the holiday weeks to protect your trip. We will text you if your flight changes.",
+      "channels": [
+        "app",
+        "email",
+        "text",
+        "social media"
+      ],
+      "why": "Maximum operational protection for the busiest week.\nSpare aircraft absorb cancellations and delays.\nTests whether spending most of the budget pays off."
+    },
+    {
+      "week": 8,
+      "target": "everyone",
+      "actions": [
+        {
+          "action": "Rebooking deal with a partner airline for 2 disrupted weeks",
+          "level": "on"
+        },
+        {
+          "action": "Goodwill for affected passengers, up to 10,000 passengers",
+          "level": "$50 cash"
+        },
+        {
+          "action": "Hotel rooms held for stranded passengers, whatever the cause",
+          "level": "on"
+        }
+      ],
+      "message": "If your Kestrel flight is canceled or delayed more than 3 hours during the strike, we will rebook you on Kestrel or a partner airline, hold a hotel room if you are stranded overnight, and pay you $50 in cash. You can always choose a refund instead if your flight is canceled or significantly delayed.",
+      "channels": [
+        "app",
+        "email",
+        "text",
+        "social media"
+      ],
+      "why": "Everything that limits harm on the day.\nCash, not credit, when the trouble is visible.\nUpper bound: what the full budget can buy."
+    }
+  ],
+  "surprises": [],
+  "decision_set": "C_maximum",
+  "customer_mix": {
+    "_note": "TEAM ASSUMPTION, share of Kestrel passengers by group (no public split: research section 5 [GAP]). Dossier: 'Price-conscious travelers: families visiting relatives, students, vacationers, and some small business travelers' plus agencies booking group tickets. Families first (holiday season, Christmas week 97% booked), vacationers next, students on winter break, 'some' business, agencies small but each books a whole group. Shares are passengers, not bookings. Each persona weighs its group's share split evenly over that group's personas.",
+    "families visiting relatives": 0.35,
+    "vacationers": 0.3,
+    "students": 0.15,
+    "business travelers": 0.1,
+    "travel agencies": 0.1
+  }
+}

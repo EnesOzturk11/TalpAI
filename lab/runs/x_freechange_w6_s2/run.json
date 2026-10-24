@@ -1,0 +1,36 @@
+{
+  "company": "kestrel",
+  "type": "plan",
+  "seed": 2,
+  "model": "gemini-3.5-flash-lite",
+  "decisions": [
+    {
+      "week": 6,
+      "target": "everyone",
+      "actions": [
+        {
+          "action": "Free changes and cancellations for bookings in a 2-week window",
+          "level": "on"
+        }
+      ],
+      "message": "Workers at our ground handling contractor plan a 48-hour strike in Orlando and Philadelphia on December 22-23. If you fly with us between December 14 and 27, you can change or cancel your booking free of charge in the app.",
+      "channels": [
+        "app",
+        "email",
+        "text",
+        "social media"
+      ],
+      "why": "Flexibility: let worried travelers move dates.\nGives control before the strike.\n$0.2M."
+    }
+  ],
+  "surprises": [],
+  "decision_set": "single_freechange_w6",
+  "customer_mix": {
+    "_note": "TEAM ASSUMPTION, share of Kestrel passengers by group (no public split: research section 5 [GAP]). Dossier: 'Price-conscious travelers: families visiting relatives, students, vacationers, and some small business travelers' plus agencies booking group tickets. Families first (holiday season, Christmas week 97% booked), vacationers next, students on winter break, 'some' business, agencies small but each books a whole group. Shares are passengers, not bookings. Each persona weighs its group's share split evenly over that group's personas.",
+    "families visiting relatives": 0.35,
+    "vacationers": 0.3,
+    "students": 0.15,
+    "business travelers": 0.1,
+    "travel agencies": 0.1
+  }
+}

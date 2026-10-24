@@ -1,0 +1,52 @@
+{
+  "company": "kestrel",
+  "type": "plan",
+  "seed": 1,
+  "model": "gemini-3.7-flash",
+  "decisions": [
+    {
+      "week": 7,
+      "target": "everyone",
+      "actions": [
+        {
+          "action": "Backup ground handling contract at both bases for the strike days",
+          "level": "on"
+        },
+        {
+          "action": "Free changes and cancellations for bookings in a 2-week window",
+          "level": "on"
+        }
+      ],
+      "message": "DRAFT MESSAGE 1: replace with the exact words you lock on the dashboard.",
+      "channels": [
+        "app",
+        "email",
+        "text"
+      ],
+      "why": "line 1\nline 2\nline 3"
+    },
+    {
+      "week": 8,
+      "target": "everyone",
+      "actions": [
+        {
+          "action": "Rebooking deal with a partner airline for 2 disrupted weeks",
+          "level": "on"
+        },
+        {
+          "action": "Hotel rooms held for stranded passengers, whatever the cause",
+          "level": "on"
+        }
+      ],
+      "message": "DRAFT MESSAGE 2: replace with the exact words you lock on the dashboard.",
+      "channels": [
+        "app",
+        "email",
+        "text",
+        "social media"
+      ],
+      "why": "line 1\nline 2\nline 3"
+    }
+  ],
+  "surprises": []
+}
