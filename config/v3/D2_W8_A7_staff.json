@@ -1,0 +1,40 @@
+{
+  "decisions": [
+    {
+      "week": 7,
+      "target": "Passengers booked on Kestrel flights to or from Orlando or Philadelphia between December 21 and December 27",
+      "target_rule": "week8_base",
+      "channels": [
+        "app",
+        "email",
+        "text message"
+      ],
+      "actions": [
+        {
+          "action": "Free changes and cancellations for bookings in a 2-week window",
+          "level": "on"
+        }
+      ],
+      "message": "Kestrel Air update: workers at our ground handling contractor in Orlando and Philadelphia plan a 48-hour strike on Dec 22-23, so some flights may be late or canceled. If you are booked between Dec 14 and Dec 27, you can change or cancel for free in the app now: Dec 21 and Dec 24 still have seats. If your flight is canceled, we will rebook you on the next Kestrel flight with a free seat or refund you in full.",
+      "why": "With no action, 9% of customers leave and only 89-92% of week 5-10 revenue is kept.\nFree changes in week 7 move 6-9 of 36 customers off Dec 22-23 and keep 94-98% of revenue (+$7-11M).\nIt costs only $0.2M, cuts switching from 9% to 3-6%, and saves our second action for the next surprise."
+    },
+    {
+      "week": 8,
+      "target": "Passengers booked on Kestrel flights to or from Orlando or Philadelphia between December 21 and December 27",
+      "target_rule": "week8_base",
+      "actions": [
+        {
+          "action": "Extra airport and call-center staff for 2 weeks",
+          "level": "on"
+        }
+      ],
+      "message": "Kestrel Air: the ground handling strike at Orlando and Philadelphia on Dec 22-23 is still expected. We have extra staff at both airports and on our phone lines through Jan 3, so you can reach a person quickly if your plans change. If your flight is canceled, we will rebook you on the next Kestrel flight with a free seat or refund you in full.",
+      "channels": [
+        "app",
+        "email",
+        "text message"
+      ],
+      "why": "Waiting an hour on the phone turns a delay into a complaint.\nExtra staff speed up rebooking on the strike days.\nIt costs $0.15M."
+    }
+  ]
+}

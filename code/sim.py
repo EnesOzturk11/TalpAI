@@ -165,12 +165,24 @@ class Sim:
                   "if you change to a different date or accept a rebooking, 'rebooked'."]
         return "\n".join(parts)
 
+    def free_window(self, pid, week):
+        """(first, last) week whose flights the free-change offer covers for this persona, or None.
+        The menu action covers bookings in a 2-week window: the decision's week and the next."""
+        for i, name, level, scope in self.world.actions_in_force(week):
+            if name.startswith("free changes") and pid in self.world.targets.get(i, ()):
+                w0 = self.world.decisions[i]["week"]
+                return (w0, w0 + 1)
+        return None
+
     def perks(self, pid, week):
         w, out = self.world, []
-        if w.has(week, "free changes", pid):
-            out.append("free changes or cancellation for flights in the next two weeks")
+        win = self.free_window(pid, week)
+        if win:
+            s0, s1 = W.week_start(win[0]), W.week_start(win[1]) + timedelta(days=6)
+            out.append(f"free changes or cancellation for Kestrel flights between {s0:%b} {s0.day} and {s1:%b} {s1.day} "
+                       f"(flights outside those dates still cost the fare difference to change)")
             for t in self.world.personas[pid]["trips"]:
-                if t["strike_day_at_base"] and t["week"] and t["week"] >= week:
+                if t["strike_day_at_base"] and t["week"] and win[0] <= t["week"] <= win[1] and t["week"] >= week:
                     alt = "Dec 21" if t["date"] == "2026-12-22" else "Dec 24"
                     out.append(f"you could move your {t['date']} {t['from']}->{t['to']} flight to {alt} at no cost "
                                f"(seats are still available that day), or cancel it for a full refund")
@@ -227,7 +239,7 @@ class Sim:
                 "recommend_0_to_10", "complaint", "actions", "posted_publicly", "what_you_said_or_posted", "said_where",
                 "what_you_noticed", "how_you_feel")},
             "flights": [o for o in legs if o], "messages_seen": len(self.world.messages_for(p["id"], week)),
-            "free_change": bool(self.world.has(week, "free changes", p["id"])),
+            "free_change": bool(self.free_window(p["id"], week)),
         })
 
     def change_date(self, p, week):
@@ -236,7 +248,8 @@ class Sim:
             if t["strike_day_at_base"] and t["week"] and t["week"] >= week and (p["id"], k) not in self.world.leg_outcome:
                 new = "2026-12-21" if t["date"] == "2026-12-22" else "2026-12-24"
                 t.update(date=new, strike_day_at_base=False, week=(date.fromisoformat(new) - W.CAL_START).days // 7 + 1)
-                self.state[p["id"]]["moved"][k] = {"to": new, "free": bool(self.world.has(week, "free changes", p["id"]))}
+                win = self.free_window(p["id"], week)
+                self.state[p["id"]]["moved"][k] = {"to": new, "free": bool(win and win[0] <= t["week"] <= win[1])}
 
     # ------------------------------------------------------------------ probes
     def ask_probe(self, p, when):

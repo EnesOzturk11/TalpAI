@@ -1,0 +1,26 @@
+{
+  "decisions": [
+    {
+      "week": 4,
+      "target": "Passengers booked on Kestrel flights to or from Orlando or Philadelphia between December 21 and December 27",
+      "target_rule": "week8_base",
+      "actions": [
+        {
+          "action": "Rebooking deal with a partner airline for 2 disrupted weeks",
+          "level": "on"
+        },
+        {
+          "action": "Free changes and cancellations for bookings in a 2-week window",
+          "level": "on"
+        }
+      ],
+      "message": "Kestrel Air: a 48-hour ground handling strike is planned at Orlando and Philadelphia on Dec 22-23, and flights on those days may be late or canceled. If you are booked between Nov 23 and Dec 6, you can change or cancel for free in the app now. If your flight in that window is canceled, we will rebook you on Kestrel or a partner airline, or refund you in full if you prefer. We will text you first if anything changes for your December flight.",
+      "channels": [
+        "app",
+        "email",
+        "text message"
+      ],
+      "why": "Warning passengers early gives them the longest time to plan.\nThe free-change and partner windows cover only the two weeks from the decision.\nIt costs $0.45M."
+    }
+  ]
+}

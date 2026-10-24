@@ -85,10 +85,15 @@ def company_week_now():
     return int((t - WEEK1_START).total_seconds() // 1800) + 1 if t >= WEEK1_START else 0
 
 
+def full_text(crisis):
+    ups = " ".join(f"UPDATE (week {u['week']}): {u['text']}" for u in crisis.get("updates", []))
+    return (crisis["text"] + " " + ups).strip()
+
+
 def three_readings(llm, crisis):
     prompt = f"""A crisis was announced to Kestrel Air, a fictional US low-cost airline (bases MCO and PHL, 6 in 10 flights
 touch a base, 210,000 passengers a week; week {crisis['announced_week']} of a ten-week calendar that runs Nov 2, 2026 to Jan 10, 2027).
-Announcement: {crisis['text']}
+Announcement: {full_text(crisis)}
 Our current reading: {crisis['reading']}
 Current effects: {json.dumps(crisis['effects'])}
 
@@ -103,8 +108,8 @@ Menu actions for mitigating_actions: {', '.join(sorted(W.MENU))}."""
 
 def candidates(llm, crisis, week, budget):
     lock = locked()
-    prompt = f"""You advise Kestrel Air's board. A new crisis: {crisis['text']}
-Our reading: {crisis['reading']}
+    prompt = f"""You advise Kestrel Air's board. A new crisis: {full_text(crisis)}
+Our reading: {crisis['reading']} {' '.join(u.get('reading', '') for u in crisis.get('updates', []))}
 Already locked decisions (fixed, do not repeat): {json.dumps([{k: d[k] for k in ('week', 'actions', 'message')} for d in lock]) or 'none'}
 Propose 4 DIFFERENT single decisions to answer this crisis, taking effect in week {week} ({W.week_label(week)}).
 Each uses 1 to 3 actions from this menu (exact names, with one listed level): {json.dumps(ACTIONS)}.

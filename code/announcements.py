@@ -60,7 +60,9 @@ def effect_to_world(e):
     return {"dates": e["dates"], "bases": "all" if "ALL" in e["airports"] else e["airports"],
             "cancel_rate": max(0.0, min(1.0, e["cancel_rate"])), "delay_hours": max(0.0, min(24.0, e["delay_hours"])),
             "bags": e["bags"], "assistance": e["assistance"], "cause": e["cause"],
-            "mitigated_by": {m: (0.3 if m.startswith("backup ground") else 0.6) for m in e["mitigating_actions"]}}
+            # only actions that change how many flights operate reduce cancellations; the rest act on passengers
+            "mitigated_by": {m: (0.3 if m.startswith("backup ground") else 0.6) for m in e["mitigating_actions"]
+                             if m.startswith(("backup ground", "lease an aircraft"))}}
 
 
 def sync_locked():

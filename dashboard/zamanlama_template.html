@@ -1,0 +1,174 @@
+<title>Karar Zamanlaması</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo+Narrow:wght@500;600;700&family=Source+Sans+3:wght@400;600;700&family=JetBrains+Mono:wght@400;600&display=swap">
+<style>
+/* Layout: one question page. Verdict, scorecard, a week-by-week timeline of each option's free-change window against the strike, trend, voices, W8 flights. */
+:root{
+  --paper:#f5f6f3; --panel:#ffffff; --ink:#152033; --muted:#5d6878; --line:#d9dde2; --soft:#eceff1;
+  --amber:#b86e00; --amber-soft:#fbefd9; --good:#1f7a4d; --bad:#b3372a; --warn:#9a6a00;
+  --c1:#6b7280; --c2:#c2410c; --c3:#8a3fb0; --c4:#1d5fb8;
+  --display:"Archivo Narrow","Arial Narrow",system-ui,sans-serif;
+  --body:"Source Sans 3",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --mono:"JetBrains Mono",ui-monospace,"SF Mono",Menlo,monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --paper:#0e1522; --panel:#152033; --ink:#e7ebf0; --muted:#9aa6b6; --line:#27344a; --soft:#1b273b;
+  --amber:#f2a93b; --amber-soft:#3a2c14; --good:#4cc38a; --bad:#f07a6b; --warn:#e3b341;
+  --c1:#9aa3b1; --c2:#ff8a5c; --c3:#c58cf0; --c4:#6aa7ff; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --paper:#0e1522; --panel:#152033; --ink:#e7ebf0; --muted:#9aa6b6; --line:#27344a; --soft:#1b273b;
+  --amber:#f2a93b; --amber-soft:#3a2c14; --good:#4cc38a; --bad:#f07a6b; --warn:#e3b341;
+  --c1:#9aa3b1; --c2:#ff8a5c; --c3:#c58cf0; --c4:#6aa7ff; color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--paper);color:var(--ink);font:16px/1.5 var(--body);margin:0}
+.wrap{max-width:1100px;margin:0 auto;padding-block:20px 48px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));display:grid;gap:26px}
+h1,h2,h3{font-family:var(--display);letter-spacing:.01em;text-wrap:balance;margin:0}
+h1{font-size:2rem} h2{font-size:1.3rem} h3{font-size:1.05rem}
+.eyebrow{font:600 .72rem/1 var(--mono);letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+.note{font-size:.86rem;color:var(--muted)}
+.num{font-family:var(--mono);font-variant-numeric:tabular-nums}
+section{display:grid;gap:12px;min-width:0}
+.verdict{background:var(--panel);border:1px solid var(--line);border-left:5px solid var(--amber);border-radius:10px;padding:18px 20px;display:grid;gap:8px}
+.verdict .lead{font:600 clamp(1.1rem,2.2vw,1.4rem)/1.35 var(--display);max-width:65ch}
+.tablebox{overflow-x:auto;background:var(--panel);border:1px solid var(--line);border-radius:8px}
+table{border-collapse:collapse;width:100%;min-width:760px}
+th,td{padding:9px 12px;text-align:left;border-bottom:1px solid var(--line);vertical-align:middle}
+th{font:600 .7rem/1.2 var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--muted);background:var(--soft)}
+td.big{font:700 1.05rem var(--mono);font-variant-numeric:tabular-nums}
+tr.best td{background:var(--amber-soft)}
+.pk{display:flex;align-items:center;gap:8px;font-weight:700}
+.dot{width:10px;height:10px;border-radius:50%;flex:none}
+.blurb{font-size:.82rem;color:var(--muted)}
+.up{color:var(--good)} .down{color:var(--bad)}
+.timeline{display:grid;grid-template-columns:120px repeat(10,minmax(0,1fr));gap:3px;min-width:640px;font-size:.8rem}
+.timeline .h{font:600 .7rem var(--mono);color:var(--muted);text-align:center}
+.timeline .lab{font-weight:700;display:flex;align-items:center;gap:6px}
+.timeline .c{height:28px;border-radius:4px;background:var(--soft);display:grid;place-items:center;font:600 .66rem var(--mono);color:var(--muted)}
+.timeline .c.win{background:var(--good);color:var(--paper)}
+.timeline .c.dec{outline:2px solid var(--ink);outline-offset:-2px}
+.timeline .c.strike{background:var(--bad);color:var(--paper)}
+.timeline .c.win.strike{background:linear-gradient(135deg,var(--good) 50%,var(--bad) 50%)}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:16px;display:grid;gap:10px;min-width:0}
+.legend{display:flex;flex-wrap:wrap;gap:6px 14px;font-size:.84rem}
+.legend span{display:inline-flex;align-items:center;gap:6px}
+svg text{fill:var(--muted);font:11px var(--mono)}
+.quotes{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,320px),1fr));gap:12px}
+blockquote{margin:0;padding:10px 12px;background:var(--panel);border:1px solid var(--line);border-left:3px solid var(--line);border-radius:6px;font-size:.92rem}
+blockquote.neg{border-left-color:var(--bad)} blockquote.pos{border-left-color:var(--good)}
+blockquote cite{display:block;font-style:normal;font-size:.76rem;color:var(--muted);margin-top:6px}
+.filters{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+select{font:inherit;color:inherit;border:1px solid var(--line);background:var(--panel);border-radius:6px;padding:6px 8px}
+select:focus-visible{outline:2px solid var(--amber);outline-offset:2px}
+.chip{display:inline-block;font:600 .7rem/1 var(--mono);padding:4px 7px;border-radius:999px;border:1px solid var(--line);color:var(--muted)}
+.chip.bad{color:var(--bad);border-color:var(--bad)} .chip.good{color:var(--good);border-color:var(--good)} .chip.warn{color:var(--warn);border-color:var(--warn)}
+.code{font:700 .8rem var(--mono)}
+.caveat{font-size:.84rem;color:var(--muted);border-left:3px solid var(--line);padding-left:10px;max-width:90ch}
+</style>
+
+<div class="wrap">
+  <header>
+    <div class="eyebrow">team-01 · Kestrel Air · aynı karar, farklı zaman</div>
+    <h1>Karar Zamanlaması</h1>
+    <div class="note" id="sub"></div>
+  </header>
+  <div class="verdict" id="verdict"></div>
+
+  <section>
+    <h2>Karne</h2>
+    <div class="tablebox"><table><thead><tr><th>Ne zaman</th><th>Uçuş geliri W5–10</th><th>Net kazanç vs karar yok</th><th>NPS</th><th>Şikâyet endeksi</th><th>Kızgın yorum</th><th>Başka havayolu</th><th>Uçuşunu kaydıran</th></tr></thead><tbody id="score"></tbody></table></div>
+    <div class="caveat">Her satır aynı kararın (A3 ücretsiz değişiklik + A5 partner havayolu, $0,45M, grev haftası yolcularına) farklı haftada verilmiş hali. Aralıklar iki seed'dir. Net kazanç = gelir farkı × ~$180M W5–10 planı − maliyet (dossier'den türetilmiş tahmin).</div>
+  </section>
+
+  <section>
+    <h2>Neden: ücretsiz değişiklik penceresi grevi kapsıyor mu?</h2>
+    <div class="tablebox" style="padding:12px"><div class="timeline" id="timeline"></div></div>
+    <div class="note">Yeşil: A3'ün ücretsiz değişiklik penceresi (karar haftası + sonraki hafta) · kırmızı: grev haftası (W8, 22–23 Aralık) · çerçeve: kararın devreye girdiği hafta. Menüye göre A3 "2 haftalık pencere" içindeki uçuşları, A5 "2 aksama haftası"nı kapsar.</div>
+  </section>
+
+  <section class="card">
+    <h3>Haftalık tavsiye puanı (0–10, persona ağırlıklı)</h3>
+    <div style="overflow-x:auto"><svg id="chart" viewBox="0 0 640 260" width="100%" role="img" aria-label="Haftalık tavsiye puanı"></svg></div>
+    <div class="legend" id="legend"></div>
+  </section>
+
+  <section>
+    <h2>Müşteriler ne dedi</h2>
+    <div class="quotes" id="quotes"></div>
+  </section>
+
+  <section>
+    <div class="filters"><h2 style="margin-right:auto">Grev haftasının uçuşları (W8)</h2>
+      <label class="note" for="fOpt">Seçenek</label><select id="fOpt"></select>
+      <label class="note" for="fSeed">Seed</label><select id="fSeed"><option value="1">1</option><option value="2">2</option></select></div>
+    <div class="tablebox"><table><thead><tr><th>Uçuş</th><th>Tarih</th><th>Güzergâh</th><th>Yolcu</th><th>Ne oldu</th><th>Yolcunun kararı</th><th>Gelir / plan</th></tr></thead><tbody id="flights"></tbody></table></div>
+    <div class="note" id="flTotal"></div>
+  </section>
+</div>
+
+<script>
+const DATA = /*__DATA__*/null;
+const ORDER=["W7_A3A5","W5_A3A5","W4_A3A5","nodecision"];
+const COL={nodecision:"--c1",W4_A3A5:"--c2",W5_A3A5:"--c3",W7_A3A5:"--c4"};
+const $=id=>document.getElementById(id);
+const css=v=>getComputedStyle(document.documentElement).getPropertyValue(v).trim();
+const el=(tag,attrs={},...kids)=>{const e=document.createElement(tag); for(const[k,v] of Object.entries(attrs)){ if(k==="class") e.className=v; else if(k==="text") e.textContent=v; else e.setAttribute(k,v);} for(const k of kids) if(k!=null) e.append(k); return e;};
+const mean=a=>a.reduce((x,y)=>x+y,0)/a.length;
+const rng=(rs,f,d=0,s="")=>{const v=rs.map(f); const a=Math.min(...v), b=Math.max(...v); return Math.round(a*10**d)===Math.round(b*10**d)?a.toFixed(d)+s:`${a.toFixed(d)}–${b.toFixed(d)}${s}`;};
+const ST={"flies as planned":["planlandığı gibi",""],"rebooked":["yeniden rezerve","warn"],"moved to another airline":["başka havayolu","bad"],"canceled the trip":["seyahati iptal","bad"]};
+
+function verdict(){
+  const o=DATA.opts, best=ORDER.reduce((a,b)=>o[a].net>=o[b].net?a:b);
+  $("sub").textContent=`36 sentetik müşteri · her seçenek 2 seed · motor muayenesi krizi dahil · ${DATA.updated} itibarıyla`;
+  const v=$("verdict"); v.textContent="";
+  v.append(el("div",{class:"eyebrow",text:"Sonuç"}),
+    el("div",{class:"lead",text:`Aynı karar W7'de verilince karar vermemeye göre ${o.W7_A3A5.net>=0?"+":""}$${o.W7_A3A5.net.toFixed(1)}M getiriyor. Bugün verilirse (W4: ${o.W4_A3A5.net>=0?"+":""}$${o.W4_A3A5.net.toFixed(1)}M, W5: ${o.W5_A3A5.net>=0?"+":""}$${o.W5_A3A5.net.toFixed(1)}M) neredeyse hiç işe yaramıyor ve müşteriyi daha çok kızdırıyor.`}),
+    el("div",{class:"note",text:"Sebep: erken verilen kararın ücretsiz değişiklik ve partner penceresi grev haftasına ulaşmıyor. Yolcu grevi erkenden öğreniyor ama elinde bir çözüm olmuyor."}));
+  if (best!=="W7_A3A5") v.append(el("div",{class:"note",text:"Not: bu turda en yüksek net kazanç "+o[best].label+"."}));
+}
+function score(){
+  const b=$("score"); b.textContent="";
+  for (const k of ORDER){ const o=DATA.opts[k], rs=o.runs; const tr=el("tr",{class:k==="W7_A3A5"?"best":""});
+    tr.append(el("td",{},el("div",{class:"pk"},el("span",{class:"dot",style:`background:var(${COL[k]})`}),o.label),el("div",{class:"blurb",text:o.blurb})),
+      el("td",{class:"big",text:rng(rs,r=>r.g4,0,"%")}), el("td",{class:"big "+(o.net>0.5?"up":o.net<-0.5?"down":""),text:`${o.net>=0?"+":"−"}$${Math.abs(o.net).toFixed(1)}M`}),
+      el("td",{class:"num",text:rng(rs,r=>r.g3,0)}), el("td",{class:"num",text:rng(rs,r=>r.cmp,1)}), el("td",{class:"num",text:mean(rs.map(r=>r.angry)).toFixed(0)+"%"}),
+      el("td",{class:"num",text:rng(rs,r=>r.other,0,"%")}), el("td",{class:"num",text:String(new Set(rs.flatMap(r=>r.moved)).size)}));
+    b.append(tr); }
+}
+function timeline(){
+  const t=$("timeline"); t.textContent=""; t.append(el("div",{class:"h",text:""})); for(let w=1;w<=10;w++) t.append(el("div",{class:"h",text:"W"+w}));
+  for (const k of ORDER){ const o=DATA.opts[k]; t.append(el("div",{class:"lab"},el("span",{class:"dot",style:`background:var(${COL[k]})`}),o.label));
+    for(let w=1;w<=10;w++){ const win=o.week && w>=o.week && w<=o.week+1; const c=el("div",{class:"c"+(win?" win":"")+(w===8?" strike":"")+(o.week===w?" dec":""),text: w===8?"grev":win?"ücretsiz":""}); t.append(c);} }
+}
+function chart(){
+  const svg=$("chart"); const NS="http://www.w3.org/2000/svg"; const mk=(n,a)=>{const e=document.createElementNS(NS,n); for(const[k,v] of Object.entries(a)) e.setAttribute(k,v); return e;};
+  const W=640,H=260,L=40,R=12,T=12,B=30; const ser=ORDER.map(k=>({k,ys:[...Array(10)].map((_,i)=>mean(DATA.opts[k].runs.map(r=>r.rec[i])))}));
+  const all=ser.flatMap(s=>s.ys); let lo=Math.min(...all)-.1, hi=Math.max(...all)+.1; const x=i=>L+(W-L-R)*i/9, y=v=>T+(H-T-B)*(1-(v-lo)/(hi-lo));
+  svg.append(mk("rect",{x:x(6.5),y:T,width:x(7.5)-x(6.5),height:H-T-B,fill:css("--amber-soft")})); const g=mk("text",{x:x(7),y:T+12,"text-anchor":"middle"}); g.textContent="grev"; svg.append(g);
+  for(let k=0;k<=4;k++){ const v=lo+(hi-lo)*k/4; svg.append(mk("line",{x1:L,x2:W-R,y1:y(v),y2:y(v),stroke:css("--line")})); const tx=mk("text",{x:L-6,y:y(v)+4,"text-anchor":"end"}); tx.textContent=v.toFixed(1); svg.append(tx);}
+  for(let i=0;i<10;i++){ const tx=mk("text",{x:x(i),y:H-10,"text-anchor":"middle"}); tx.textContent="W"+(i+1); svg.append(tx);}
+  const lg=$("legend"); lg.textContent="";
+  for (const s of ser){ const c=css(COL[s.k]); svg.append(mk("polyline",{points:s.ys.map((v,i)=>x(i)+","+y(v)).join(" "),fill:"none",stroke:c,"stroke-width":s.k==="W7_A3A5"?3:1.8}));
+    const w=DATA.opts[s.k].week; if(w){ const dx=x(w-1), dy=y(s.ys[w-1]); svg.append(mk("rect",{x:dx-4,y:dy-4,width:8,height:8,fill:c,transform:`rotate(45 ${dx} ${dy})`})); }
+    lg.append(el("span",{},el("span",{class:"dot",style:`background:var(${COL[s.k]})`}),`${DATA.opts[s.k].label} → W10: ${s.ys[9].toFixed(2)}`)); }
+  lg.append(el("span",{class:"note",text:"◆ kararın devreye girdiği hafta"}));
+}
+function quotes(){
+  const box=$("quotes"); box.textContent=""; const pick=(k,pred,n)=>{ const out=[]; for (const r of DATA.opts[k].runs) for (const q of r.quotes) if (pred(q,r) && out.length<n && !out.some(o=>o.p===q.p)) out.push(q); return out; };
+  const add=(k,qs,cls,title)=>{ for (const q of qs){ const p=DATA.people[q.p]||{name:q.p,group:""}; box.append(el("blockquote",{class:cls},`“${q.t}”`, el("cite",{text:`${p.name} · ${p.group}${q.where?" · "+q.where:""} · W${q.w} · ${title}`}))); } };
+  add("W4_A3A5", pick("W4_A3A5",q=>q.rec<=5,2), "neg", DATA.opts.W4_A3A5.label);
+  add("W5_A3A5", pick("W5_A3A5",q=>q.rec<=5 && q.w>=6,1), "neg", DATA.opts.W5_A3A5.label);
+  add("W7_A3A5", pick("W7_A3A5",(q,r)=>r.moved.includes(q.p) && q.w===7,3), "pos", DATA.opts.W7_A3A5.label);
+}
+function flights(){
+  const k=$("fOpt").value, s=+$("fSeed").value; const run=DATA.opts[k].runs.find(r=>r.seed===s)||DATA.opts[k].runs[0]; const b=$("flights"); b.textContent=""; let rev=0, plan=0;
+  for (const f of run.flights){ const p=DATA.people[f.p]||{name:f.p}; const [st,cls]=ST[f.st]||[f.st,""]; rev+=f.rev; plan+=f.plan;
+    const out=f.out==="cancel"?"İPTAL":f.out==="delay"?`${Math.round(f.dh)} sa rötar`:"zamanında";
+    b.append(el("tr",{}, el("td",{class:"code",text:f.code}), el("td",{class:"num",text:f.d.slice(5)+(f.orig?` (önce ${f.orig.slice(5)})`:"")}), el("td",{text:`${f.fr}→${f.to}`}),
+      el("td",{text:`${p.name} · ${f.n} kişi`}), el("td",{},el("span",{class:"chip "+(f.out==="cancel"?"bad":f.out==="delay"?"warn":"good"),text:out})), el("td",{},el("span",{class:"chip "+cls,text:st})),
+      el("td",{class:"num",text:`$${f.rev.toLocaleString("en-US")} / $${f.plan.toLocaleString("en-US")}`}))); }
+  $("flTotal").textContent=`${run.flights.length} uçuş · W8 geliri $${rev.toLocaleString("en-US")} / plan $${plan.toLocaleString("en-US")} (${plan?Math.round(100*rev/plan):0}%) · grev günü iptalleri simülasyonda bilerek daha sık zarlanır; gelir metrikleri bunu düzeltir, bu liste ham sonucu gösterir.`;
+}
+const fo=$("fOpt"); for (const k of ORDER) fo.append(el("option",{value:k,text:DATA.opts[k].label})); fo.addEventListener("input",flights); $("fSeed").addEventListener("input",flights);
+verdict(); score(); timeline(); chart(); quotes(); flights();
+</script>

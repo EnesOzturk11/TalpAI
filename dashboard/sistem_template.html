@@ -1,0 +1,289 @@
+<title>Kestrel Durum Odası</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo+Narrow:wght@500;600;700&family=Source+Sans+3:wght@400;600;700&family=JetBrains+Mono:wght@400;600&display=swap">
+<style>
+/* Layout: a briefing that reads top to bottom. Status strip, four headline tiles, crisis timeline, three weekly charts,
+   then the questions the team must answer: what the engine crisis cost, what our decision bought, what the last action should be. */
+:root{
+  --paper:#f4f5f2; --panel:#ffffff; --ink:#14202f; --muted:#5b6676; --line:#d8dce1; --soft:#eceef0;
+  --accent:#b35c00; --accent-soft:#fbecd8; --good:#1d7a4c; --good-soft:#e3f3ea; --bad:#b4372b; --bad-soft:#f8e4e1; --warn:#946600;
+  --s-nd:#7b8494; --s-lk:#1b5fb4; --s-ne:#0e8a8a; --s-a5:#7a3fb0; --s-a2:#c2410c; --s-a6:#2f7d32; --s-a7:#a3264b; --s-a4:#946600;
+  --display:"Archivo Narrow","Arial Narrow",system-ui,sans-serif;
+  --body:"Source Sans 3",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --mono:"JetBrains Mono",ui-monospace,"SF Mono",Menlo,monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --paper:#0d1420; --panel:#141f30; --ink:#e6eaf0; --muted:#9ba6b6; --line:#26334a; --soft:#1a2639;
+  --accent:#f0a33a; --accent-soft:#3a2b14; --good:#4cc38a; --good-soft:#15302a; --bad:#f07b6b; --bad-soft:#3a1f1c; --warn:#e3b341;
+  --s-nd:#a1aab8; --s-lk:#6aa7ff; --s-ne:#3fd1cf; --s-a5:#c58cf0; --s-a2:#ff8a5c; --s-a6:#6fcf73; --s-a7:#ff7aa2; --s-a4:#e3b341; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --paper:#0d1420; --panel:#141f30; --ink:#e6eaf0; --muted:#9ba6b6; --line:#26334a; --soft:#1a2639;
+  --accent:#f0a33a; --accent-soft:#3a2b14; --good:#4cc38a; --good-soft:#15302a; --bad:#f07b6b; --bad-soft:#3a1f1c; --warn:#e3b341;
+  --s-nd:#a1aab8; --s-lk:#6aa7ff; --s-ne:#3fd1cf; --s-a5:#c58cf0; --s-a2:#ff8a5c; --s-a6:#6fcf73; --s-a7:#ff7aa2; --s-a4:#e3b341; color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--paper);color:var(--ink);font:16px/1.55 var(--body);margin:0}
+.wrap{max-width:1180px;margin:0 auto;padding-block:22px 56px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));display:grid;gap:34px}
+h1,h2,h3{font-family:var(--display);letter-spacing:.01em;text-wrap:balance;margin:0}
+h1{font-size:2.1rem} h2{font-size:1.4rem} h3{font-size:1.05rem}
+p{margin:0;max-width:72ch}
+.eyebrow{font:600 .72rem/1 var(--mono);letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+.note{font-size:.86rem;color:var(--muted)}
+.num{font-family:var(--mono);font-variant-numeric:tabular-nums}
+section{display:grid;gap:14px;min-width:0}
+.sec-head{display:grid;gap:4px}
+.status{display:flex;flex-wrap:wrap;gap:8px}
+.pill{font:600 .78rem/1 var(--mono);padding:8px 10px;border-radius:999px;border:1px solid var(--line);background:var(--panel)}
+.pill.lock{border-color:var(--s-lk);color:var(--s-lk)} .pill.next{background:var(--accent-soft);border-color:var(--accent);color:var(--accent)}
+.tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,240px),1fr));gap:12px}
+.tile{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:14px 16px;display:grid;gap:6px;min-width:0}
+.tile .v{font:700 2rem/1 var(--display);font-variant-numeric:tabular-nums}
+.tile .cmp{font-size:.84rem;color:var(--muted)}
+.badge{justify-self:start;font:600 .7rem/1 var(--mono);padding:4px 7px;border-radius:4px}
+.badge.ok{background:var(--good-soft);color:var(--good)} .badge.no{background:var(--bad-soft);color:var(--bad)}
+.up{color:var(--good)} .down{color:var(--bad)}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:16px 18px;display:grid;gap:10px;min-width:0}
+.grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,460px),1fr));gap:14px}
+.chart{width:100%;overflow-x:auto}
+svg text{fill:var(--muted);font:11px var(--mono)}
+.legend{display:flex;flex-wrap:wrap;gap:6px 14px;font-size:.84rem}
+.legend span{display:inline-flex;align-items:center;gap:6px}
+.dot{width:10px;height:10px;border-radius:50%;flex:none;display:inline-block}
+.tl{display:grid;grid-template-columns:repeat(10,minmax(0,1fr));gap:4px;min-width:640px}
+.tl .wk{font:600 .72rem var(--mono);color:var(--muted);text-align:center}
+.tl .wk b{display:block;font-weight:400;font-size:.66rem}
+.tl .ev{border-radius:6px;padding:6px 8px;font-size:.78rem;line-height:1.3;min-height:52px}
+.ev.engine{background:var(--accent-soft);border:1px solid var(--accent)}
+.ev.strike{background:var(--bad-soft);border:1px solid var(--bad)}
+.ev.decision{background:var(--panel);border:2px solid var(--s-lk)}
+.tablebox{overflow-x:auto;background:var(--panel);border:1px solid var(--line);border-radius:10px}
+table{border-collapse:collapse;width:100%;min-width:720px}
+th,td{padding:10px 12px;text-align:left;border-bottom:1px solid var(--line);vertical-align:middle}
+th{font:600 .7rem/1.2 var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--muted);background:var(--soft)}
+td.big{font:700 1rem var(--mono);font-variant-numeric:tabular-nums}
+tr.top td{background:var(--accent-soft)}
+.pk{display:flex;align-items:center;gap:8px;font-weight:700}
+.sub{font-size:.8rem;color:var(--muted)}
+.quotes{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,320px),1fr));gap:12px}
+blockquote{margin:0;padding:10px 12px;background:var(--panel);border:1px solid var(--line);border-left:3px solid var(--line);border-radius:6px;font-size:.92rem}
+blockquote.neg{border-left-color:var(--bad)} blockquote.pos{border-left-color:var(--good)}
+blockquote cite{display:block;font-style:normal;font-size:.76rem;color:var(--muted);margin-top:6px}
+.tabs{display:flex;flex-wrap:wrap;gap:6px}
+.tabs button{font:600 .84rem var(--body);border:1px solid var(--line);background:var(--panel);color:var(--muted);border-radius:999px;padding:6px 12px;cursor:pointer}
+.tabs button[aria-pressed="true"]{background:var(--ink);color:var(--paper);border-color:var(--ink)}
+.tabs button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.method{display:grid;gap:8px;font-size:.92rem}
+.method dl{display:grid;grid-template-columns:max-content minmax(0,1fr);gap:6px 16px;margin:0}
+.method dt{font:600 .82rem var(--mono)} .method dd{margin:0}
+@media (max-width:560px){.method dl{grid-template-columns:minmax(0,1fr)}}
+.caveat{font-size:.84rem;color:var(--muted);border-left:3px solid var(--line);padding-left:10px;max-width:90ch}
+</style>
+
+<div class="wrap">
+  <header style="display:grid;gap:10px">
+    <div class="eyebrow">team-01 · Kestrel Air · TALP Simulation Lab</div>
+    <h1>Kestrel Durum Odası</h1>
+    <p class="note" id="sub"></p>
+    <div class="status" id="status"></div>
+  </header>
+
+  <section>
+    <div class="sec-head"><h2>Bir bakışta</h2><p class="note">Kilitli kararımızla şu anki gidişat, karar vermeseydik ne olacağıyla karşılaştırmalı. Rozetler board hedefini gösterir.</p></div>
+    <div class="tiles" id="tiles"></div>
+  </section>
+
+  <section>
+    <div class="sec-head"><h2>Ne oldu, ne olacak</h2><p class="note">Şirket takvimi: her kutu bir hafta. Turuncu: motor krizi · kırmızı: grev · mavi çerçeve: kilitli kararımız.</p></div>
+    <div class="tablebox" style="padding:12px"><div class="tl" id="timeline"></div></div>
+  </section>
+
+  <section>
+    <div class="sec-head"><h2>Hafta hafta</h2><p class="note">Üç grafik aynı on haftayı gösterir. Seçenekler: karar yok, kilitli kararımız ve kilitli kararla "motor krizi hiç olmasaydı".</p></div>
+    <div class="grid2">
+      <div class="card"><h3>Filo: iptal edilen uçuşlar</h3><p class="note">Planlanan uçuşların yüzdesi (grev günleri hariç; G1 bu hesaptan gelir). W4–W5 yükselişi yerde kalan 3 uçak.</p><div class="chart" id="chFleet"></div><div class="legend" id="lgFleet"></div></div>
+      <div class="card"><h3>Gelir: planın yüzde kaçı uçuldu</h3><p class="note">O haftanın planlanan biletlerinden Kestrel'de uçulan kısmı (persona ağırlıklı).</p><div class="chart" id="chRev"></div><div class="legend" id="lgRev"></div></div>
+    </div>
+    <div class="card"><h3>Müşteri memnuniyeti: tavsiye puanı (0–10)</h3><p class="note">Personaların her hafta verdiği "Kestrel'i tavsiye eder misin" puanı, ağırlıklı ortalama.</p><div class="chart" id="chRec"></div><div class="legend" id="lgRec"></div></div>
+  </section>
+
+  <section>
+    <div class="sec-head"><h2>Motor krizinin bedeli</h2><p class="note">Aynı kilitli kararla iki dünya: W3 muayenesi ve W4'te yerde kalan 3 uçak olduğunda ve hiç olmasaydı.</p></div>
+    <div class="tablebox"><table id="engineTbl"></table></div>
+    <p id="engineText"></p>
+  </section>
+
+  <section>
+    <div class="sec-head"><h2>Kilitli kararımız ne kazandırıyor</h2><p class="note">W7 · A3: grev haftası yolcularına ücretsiz değişiklik/iptal ($0,2M). Karar yok ile karşılaştırma, iki seed.</p></div>
+    <div class="tiles" id="lockTiles"></div>
+  </section>
+
+  <section>
+    <div class="sec-head"><h2>Son aksiyon hakkımız için adaylar</h2><p class="note">Her satır kilitli karar + tek bir ek aksiyon. Sıralama: yalnızca kilitli karara göre net kazanç (temel senaryo). Ağır grev: iptaller iki katı ve grev 24 Aralık'a uzuyor.</p></div>
+    <div class="tablebox"><table id="candTbl"></table></div>
+    <div class="card"><h3>Net kazanç: yalnızca kilitli karara göre ($M)</h3><div class="chart" id="chCand"></div><div class="legend" id="lgCand"></div></div>
+  </section>
+
+  <section>
+    <div class="sec-head"><h2>Kim etkileniyor</h2><p class="note">Beş müşteri grubu için W5–10 gelirinin korunan kısmı ve 10. haftada başka havayoluna geçmiş olanlar.</p></div>
+    <div class="grid2">
+      <div class="card"><h3>Korunan gelir (W5–10, %)</h3><div class="chart" id="chSegRev"></div><div class="legend" id="lgSeg"></div></div>
+      <div class="card"><h3>Tavsiye puanındaki değişim (W1 → W10)</h3><div class="chart" id="chSegRec"></div></div>
+    </div>
+  </section>
+
+  <section>
+    <div class="sec-head"><h2>Anket: başta ve sonda</h2><p class="note">Her personaya simülasyondan önce ve 10. haftadan sonra 8 check-in sorusu (1–5). ⇅ ters soru: yüksek puan kötüdür.</p></div>
+    <div class="card"><div class="chart" id="chProbe"></div><div class="legend" id="lgProbe"></div></div>
+  </section>
+
+  <section>
+    <div class="sec-head"><h2>Müşterilerin sesi</h2><p class="note">Personaların kendi sözleri, kilitli karar senaryosundan. Konu seçin.</p></div>
+    <div class="tabs" id="qTabs"></div>
+    <div class="quotes" id="quotes"></div>
+  </section>
+
+  <section class="card method">
+    <h3>Nasıl okunmalı</h3>
+    <dl>
+      <dt>Persona</dt><dd>84 sentetik müşteri (5 grup). Her biri haftalık yolcuların bir dilimini temsil eder; gerçek kişi değildir.</dd>
+      <dt>Seed</dt><dd>Her seçenek iki kez koşuldu; aralıklar iki seed'dir. ±3 puandan küçük farklar gürültü sayılmalı.</dd>
+      <dt>G1</dt><dd>Grev günleri hariç planlanan uçuşların yapılan kısmı; filo modelinden (günde ~188 uçuş). Hedef ≥ %98.</dd>
+      <dt>G4 / gelir</dt><dd>W5–10 planlanan bilet gelirinin Kestrel'de uçulan kısmı. Hedef ≥ %96. Net kazanç = gelir farkı × ~$180M (dossier'den türetilmiş) − aksiyon maliyeti.</dd>
+      <dt>NPS</dt><dd>1. hafta dossier'deki +12'ye sabitlenir; değişim simülasyondan gelir.</dd>
+      <dt>Aksiyon kodları</dt><dd>A1 uçak kiralama · A2 yedek yer hizmetleri · A3 ücretsiz değişiklik · A4 telafi kredisi · A5 partner havayolu · A6 otel · A7 ek personel · A8 fiyat tavanı · A9 indirim · A10 çift puan · A11 uçuş birleştirme.</dd>
+      <dt>Sınırlar</dt><dd>A8, A9 ve A11'in etkisi modelde yok. Krizlerin okuması (iptal oranı, süre) bizim tahminimizdir. Grev günü iptalleri simülasyonda daha sık zarlanır, metrikler bunu düzeltir.</dd>
+    </dl>
+  </section>
+</div>
+
+<script>
+const DATA = /*__DATA__*/null;
+const $=id=>document.getElementById(id);
+const css=v=>getComputedStyle(document.documentElement).getPropertyValue(v).trim();
+const el=(tag,attrs={},...kids)=>{const e=document.createElement(tag); for(const[k,v] of Object.entries(attrs)){ if(k==="class") e.className=v; else if(k==="text") e.textContent=v; else e.setAttribute(k,v);} for(const k of kids) if(k!=null) e.append(k); return e;};
+const mean=a=>a.reduce((x,y)=>x+y,0)/a.length;
+const R=(scen,opt)=>((DATA.runs[scen]||{})[opt])||[];
+const avg=(scen,opt,f)=>{const rs=R(scen,opt); return rs.length?mean(rs.map(f)):null;};
+const rangeStr=(scen,opt,f,d=0,s="")=>{const v=R(scen,opt).map(f); if(!v.length) return "—"; const a=Math.min(...v),b=Math.max(...v); return Math.round(a*10**d)===Math.round(b*10**d)?a.toFixed(d)+s:`${a.toFixed(d)}–${b.toFixed(d)}${s}`;};
+const COLOR={nodecision:"--s-nd",locked_only:"--s-lk",noengine:"--s-ne",D2_W8_A5_partner:"--s-a5",D2_W8_A2_backup:"--s-a2",D2_W8_A6_hotel:"--s-a6",D2_W8_A7_staff:"--s-a7",D2_W9_A4_credit:"--s-a4"};
+const NS="http://www.w3.org/2000/svg"; const mk=(n,a={})=>{const e=document.createElementNS(NS,n); for(const[k,v] of Object.entries(a)) e.setAttribute(k,v); return e;};
+const fmtM=v=>`${v>=0?"+":"−"}$${Math.abs(v).toFixed(1)}M`;
+
+function lineChart(box, legendBox, series, {yfmt=v=>v.toFixed(1), marks=[], H=240}={}){
+  box.textContent=""; legendBox.textContent=""; const W=620,L=46,Rr=14,T=14,B=30;
+  const svg=mk("svg",{viewBox:`0 0 ${W} ${H}`,width:"100%",role:"img"});
+  const all=series.flatMap(s=>s.ys.filter(v=>v!=null)); let lo=Math.min(...all), hi=Math.max(...all); const pad=(hi-lo)*.12||0.5; lo-=pad; hi+=pad;
+  const x=i=>L+(W-L-Rr)*i/9, y=v=>T+(H-T-B)*(1-(v-lo)/(hi-lo));
+  for (const m of marks){ svg.append(mk("rect",{x:x(m.w-1.5),y:T,width:x(1)-x(0),height:H-T-B,fill:css(m.fill)})); const t=mk("text",{x:x(m.w-1),y:T+12,"text-anchor":"middle"}); t.textContent=m.label; svg.append(t); }
+  for(let k=0;k<=4;k++){ const v=lo+(hi-lo)*k/4; svg.append(mk("line",{x1:L,x2:W-Rr,y1:y(v),y2:y(v),stroke:css("--line")})); const t=mk("text",{x:L-6,y:y(v)+4,"text-anchor":"end"}); t.textContent=yfmt(v); svg.append(t); }
+  for(let i=0;i<10;i++){ const t=mk("text",{x:x(i),y:H-10,"text-anchor":"middle"}); t.textContent="W"+(i+1); svg.append(t); }
+  for (const s of series){ const c=css(s.color); const pts=s.ys.map((v,i)=>v==null?null:[x(i),y(v)]).filter(Boolean);
+    svg.append(mk("polyline",{points:pts.map(p=>p.join(",")).join(" "),fill:"none",stroke:c,"stroke-width":s.bold?3:1.8,"stroke-dasharray":s.dash?"5 4":""}));
+    const last=pts[pts.length-1]; if(last) svg.append(mk("circle",{cx:last[0],cy:last[1],r:3.5,fill:c}));
+    legendBox.append(el("span",{},el("span",{class:"dot",style:`background:var(${s.color})`}),`${s.label}${s.end!=null?" → "+s.end:""}`)); }
+  box.append(svg);
+}
+function hbar(box, legendBox, groups, series, {lo=0, hi=100, fmt=v=>v.toFixed(0), zero=null}={}){
+  box.textContent=""; if(legendBox) legendBox.textContent=""; const W=620, rowH=16, gap=8, L=150, Rr=56; const n=series.length; const H=groups.length*(n*rowH+gap+10)+20;
+  const svg=mk("svg",{viewBox:`0 0 ${W} ${H}`,width:"100%",role:"img"}); const x=v=>L+(W-L-Rr)*(Math.max(lo,Math.min(hi,v))-lo)/(hi-lo);
+  if (zero!=null) svg.append(mk("line",{x1:x(zero),x2:x(zero),y1:6,y2:H-6,stroke:css("--line")}));
+  groups.forEach((g,gi)=>{ const y0=10+gi*(n*rowH+gap+10); const t=mk("text",{x:0,y:y0+n*rowH/2+4}); t.textContent=g.label; t.setAttribute("style","fill:"+css("--ink")+";font:600 12px "+css("--body")); svg.append(t);
+    series.forEach((s,si)=>{ const v=g.values[si]; if(v==null) return; const yy=y0+si*rowH; const x0=zero!=null?x(Math.min(zero,v)):x(lo), x1=zero!=null?x(Math.max(zero,v)):x(v);
+      svg.append(mk("rect",{x:x0,y:yy,width:Math.max(1,x1-x0),height:rowH-4,rx:2,fill:css(s.color)})); const tv=mk("text",{x:(zero!=null&&v<zero?x0-4:x1+4),y:yy+rowH-6,"text-anchor":(zero!=null&&v<zero?"end":"start")}); tv.textContent=fmt(v); svg.append(tv); }); });
+  box.append(svg); if(legendBox) for (const s of series) legendBox.append(el("span",{},el("span",{class:"dot",style:`background:var(${s.color})`}),s.label));
+}
+
+function header(){
+  const L=DATA.locked[0]; $("sub").textContent=`84 sentetik müşteri · her seçenek 2 seed · grev (W8) ve motor krizi (W3–W5) dahil · veriler ${DATA.updated} itibarıyla`;
+  const st=$("status"); st.textContent="";
+  st.append(el("span",{class:"pill lock",text:`Kilitli: W${L.week} · A3 ücretsiz değişiklik · $0,2M`}), el("span",{class:"pill",text:"Kalan: 1 aksiyon hakkı · $2,8M bütçe"}));
+  const now=new Intl.DateTimeFormat("en-GB",{timeZone:"Europe/Istanbul",hour:"2-digit",minute:"2-digit",hour12:false}).format(new Date());
+  for (const [l,t] of [["W7 değişiklik son","16:00"],["W8 kilit","16:30"],["W9 kilit","17:00"],["W10 kilit","17:30"],["ZIP","18:00"]]) if (t>now){ st.append(el("span",{class:"pill next",text:`${l} ${t}`})); break; }
+}
+function tile(box, title, val, cmp, ok, hint){ const t=el("div",{class:"tile"}, el("div",{class:"eyebrow",text:title}), el("div",{class:"v",text:val}), el("div",{class:"cmp",text:cmp}));
+  if (ok!=null) t.append(el("span",{class:"badge "+(ok?"ok":"no"),text:ok?"hedef tutuyor":"hedefin altında"})); if (hint) t.append(el("div",{class:"note",text:hint})); box.append(t); }
+function tiles(){
+  const b=$("tiles"); b.textContent=""; const g4=avg("base","locked_only",r=>r.g4), g4n=avg("base","nodecision",r=>r.g4);
+  const g1=avg("base","locked_only",r=>r.g1), g1n=avg("base","nodecision",r=>r.g1), ot=avg("base","locked_only",r=>r.other), otn=avg("base","nodecision",r=>r.other);
+  const g3=avg("base","locked_only",r=>r.g3), g3n=avg("base","nodecision",r=>r.g3);
+  tile(b,"Gelir (W5–10, plana göre)",rangeStr("base","locked_only",r=>r.g4,0,"%"),`karar yok: ${rangeStr("base","nodecision",r=>r.g4,0,"%")} · fark ${fmtM((g4-g4n)/100*DATA.plan_m-0.2)}`, g4>=96, "Hedef ≥ %96");
+  tile(b,"G1: yapılan uçuşlar",rangeStr("base","locked_only",r=>r.g1,1,"%"),`karar yok: ${rangeStr("base","nodecision",r=>r.g1,1,"%")} · yerde kalan 3 uçak yüzünden`, g1>=98, "Hedef ≥ %98");
+  tile(b,"Başka havayoluna geçen",rangeStr("base","locked_only",r=>r.other,0,"%"),`karar yok: ${rangeStr("base","nodecision",r=>r.other,0,"%")}`, null, "Düşük iyi");
+  tile(b,"NPS (10. hafta)",rangeStr("base","locked_only",r=>r.g3,0),`karar yok: ${rangeStr("base","nodecision",r=>r.g3,0)} · geçen kış +12`, g3>=12, "Hedef: geçen kıştan kötü değil");
+}
+function timeline(){
+  const t=$("timeline"); t.textContent=""; const dates=["2–8 Kas","9–15 Kas","16–22 Kas","23–29 Kas","30 Kas–6 Ara","7–13 Ara","14–20 Ara","21–27 Ara","28 Ara–3 Oca","4–10 Oca"];
+  for(let w=1;w<=10;w++) t.append(el("div",{class:"wk"},`W${w}`,el("b",{text:dates[w-1]})));
+  const ev={3:["engine","Motor muayenesi duyurusu; TikTok videosu yayılıyor."],4:["engine","3 uçak yerde (~2 hafta). Şükran Günü haftası."],5:["engine","Uçaklar 6 Aralık'a kadar yerde."],7:["decision","Kilitli kararımız: ücretsiz değişiklik (A3)."],8:["strike","Grev: 22–23 Aralık, MCO ve PHL."]};
+  for(let w=1;w<=10;w++){ const e=ev[w]; t.append(e?el("div",{class:"ev "+e[0],text:e[1]}):el("div",{class:"ev"})); }
+}
+function weekly(){
+  const S=[{opt:"nodecision",scen:"base",label:"Karar yok",color:"--s-nd"},{opt:"locked_only",scen:"base",label:"Kilitli karar (W7 · A3)",color:"--s-lk",bold:true},{opt:"locked_only",scen:"noengine",label:"Kilitli karar, motor krizi olmasaydı",color:"--s-ne",dash:true}];
+  const ser=(f,d)=>S.filter(s=>R(s.scen,s.opt).length).map(s=>{ const ys=[...Array(10)].map((_,i)=>{ const v=R(s.scen,s.opt).map(r=>f(r.weeks[i])).filter(v=>v!=null); return v.length?mean(v):null; }); return {...s, ys, end: ys[9]!=null?ys[9].toFixed(d):null}; });
+  const strike=[{w:8,label:"grev",fill:"--bad-soft"}];
+  lineChart($("chFleet"),$("lgFleet"),ser(w=>w.cancel_pct,1),{yfmt:v=>v.toFixed(1)+"%",marks:[{w:4,label:"3 uçak yerde",fill:"--accent-soft"},{w:5,label:"",fill:"--accent-soft"},...strike]});
+  lineChart($("chRev"),$("lgRev"),ser(w=>w.rev_pct,0),{yfmt:v=>v.toFixed(0)+"%",marks:strike});
+  lineChart($("chRec"),$("lgRec"),ser(w=>w.rec,2),{yfmt:v=>v.toFixed(1),marks:[{w:3,label:"muayene",fill:"--accent-soft"},...strike]});
+}
+function engine(){
+  const tb=$("engineTbl"); tb.textContent=""; const rows=[["G1: yapılan uçuşlar",r=>r.g1,1,"%"],["Gelir W5–10",r=>r.g4,1,"%"],["NPS (10. hafta)",r=>r.g3,0,""],["Başka havayoluna geçen",r=>r.other,1,"%"],["Şikâyet endeksi",r=>r.g3b,1,""]];
+  tb.append(el("thead",{},el("tr",{},el("th",{text:"Kilitli kararla"}),el("th",{text:"Motor krizi var (gerçek)"}),el("th",{text:"Motor krizi olmasaydı"}),el("th",{text:"Krizin bedeli"}))));
+  const body=el("tbody"); for (const [l,f,d,s] of rows){ const a=avg("base","locked_only",f), b=avg("noengine","locked_only",f);
+    body.append(el("tr",{},el("td",{text:l}),el("td",{class:"big",text:rangeStr("base","locked_only",f,d,s)}),el("td",{class:"num",text:rangeStr("noengine","locked_only",f,d,s)}),el("td",{class:"num",text:a!=null&&b!=null?`${(a-b)>=0?"+":""}${(a-b).toFixed(d)}${s}`:"—"}))); }
+  tb.append(body);
+  const dg1=avg("base","locked_only",r=>r.g1)-avg("noengine","locked_only",r=>r.g1), dg4=avg("base","locked_only",r=>r.g4)-avg("noengine","locked_only",r=>r.g4);
+  $("engineText").textContent=`Motor krizi G1'i ${Math.abs(dg1).toFixed(1)} puan düşürüyor${avg("base","locked_only",r=>r.g1)<98?" ve %98 hedefinin altına itiyor":""}; gelire etkisi ${dg4>=0?"+":""}${dg4.toFixed(1)} puan (${fmtM(dg4/100*DATA.plan_m)}). W5 kilidi kaçtığı için yerdeki uçakları kiralık uçakla telafi etme şansı kalmadı.`;
+}
+function lockTiles(){
+  const b=$("lockTiles"); b.textContent=""; const d=(f)=>avg("base","locked_only",f)-avg("base","nodecision",f);
+  tile(b,"Net kazanç",fmtM(d(r=>r.g4)/100*DATA.plan_m-0.2),`maliyet $0,2M · gelir farkı ${d(r=>r.g4).toFixed(1)} puan`,null,null);
+  tile(b,"Uçuşunu grev gününden kaydıran",rangeStr("base","locked_only",r=>r.moved,0," kişi"),`karar yok: ${rangeStr("base","nodecision",r=>r.moved,0," kişi")}`,null,"84 personadan");
+  tile(b,"Başka havayoluna geçiş",`${d(r=>r.other)>=0?"+":""}${d(r=>r.other).toFixed(1)} puan`,`${rangeStr("base","locked_only",r=>r.other,0,"%")} vs ${rangeStr("base","nodecision",r=>r.other,0,"%")}`,null,"Negatif iyi");
+  tile(b,"Kızgın yorum payı",rangeStr("base","locked_only",r=>r.angry,0,"%"),`karar yok: ${rangeStr("base","nodecision",r=>r.angry,0,"%")} · memnun: ${rangeStr("base","locked_only",r=>r.happy,0,"%")}`,null,"Tavsiye puanı 0–4 iken yazılan mesajlar");
+}
+function candidates(){
+  const C=["locked_only","D2_W8_A5_partner","D2_W8_A2_backup","D2_W8_A6_hotel","D2_W8_A7_staff","D2_W9_A4_credit"];
+  const base=avg("base","locked_only",r=>r.g4), baseS=avg("severe","locked_only",r=>r.g4);
+  const rows=C.filter(c=>R("base",c).length).map(c=>{ const o=DATA.options[c]; const extra=o.cost-0.2; const net=c==="locked_only"?0:(avg("base",c,r=>r.g4)-base)/100*DATA.plan_m-extra;
+    const netS=R("severe",c).length&&baseS!=null?(c==="locked_only"?0:(avg("severe",c,r=>r.g4)-baseS)/100*DATA.plan_m-extra):null; return {c,o,extra,net,netS}; }).sort((a,b)=>b.net-a.net);
+  const tb=$("candTbl"); tb.textContent="";
+  tb.append(el("thead",{},el("tr",{},...["Seçenek","Ek maliyet","Gelir W5–10","Net (temel)","Net (ağır grev)","G1","G2 24 saat","NPS","Başka havayolu"].map(h=>el("th",{text:h})))));
+  const body=el("tbody"); rows.forEach((x,i)=>{ const tr=el("tr",{class:i===0&&x.c!=="locked_only"?"top":""});
+    tr.append(el("td",{},el("div",{class:"pk"},el("span",{class:"dot",style:`background:var(${COLOR[x.c]})`}),x.o.label),el("div",{class:"sub",text:x.o.blurb})),
+      el("td",{class:"num",text:x.c==="locked_only"?"—":"$"+x.extra.toFixed(2)+"M"}), el("td",{class:"big",text:rangeStr("base",x.c,r=>r.g4,0,"%")}),
+      el("td",{class:"big "+(x.net>0.5?"up":x.net<-0.5?"down":""),text:x.c==="locked_only"?"baz":fmtM(x.net)}),
+      el("td",{class:"num "+(x.netS>0.5?"up":x.netS<-0.5?"down":""),text:x.netS==null?"koşulmadı":x.c==="locked_only"?"baz":fmtM(x.netS)}),
+      el("td",{class:"num",text:rangeStr("base",x.c,r=>r.g1,1,"%")}), el("td",{class:"num",text:rangeStr("base",x.c,r=>r.g2,0,"%")}),
+      el("td",{class:"num",text:rangeStr("base",x.c,r=>r.g3,0)}), el("td",{class:"num",text:rangeStr("base",x.c,r=>r.other,0,"%")})); body.append(tr); });
+  tb.append(body);
+  const g=rows.filter(x=>x.c!=="locked_only").map(x=>({label:x.o.label.replace("+ ",""),values:[x.net,x.netS]}));
+  const vals=g.flatMap(x=>x.values).filter(v=>v!=null); const m=Math.max(2,...vals.map(Math.abs));
+  hbar($("chCand"),$("lgCand"),g,[{label:"Temel senaryo",color:"--s-lk"},{label:"Ağır grev",color:"--s-a2"}],{lo:-m,hi:m,zero:0,fmt:v=>fmtM(v)});
+}
+function segments(){
+  const G=Object.keys(DATA.groups); const S=[{opt:"nodecision",label:"Karar yok",color:"--s-nd"},{opt:"locked_only",label:"Kilitli karar",color:"--s-lk"}];
+  const mkG=f=>G.map(g=>({label:DATA.groups[g],values:S.map(s=>{ const v=R("base",s.opt).map(r=>f(r.seg[g])).filter(v=>v!=null); return v.length?mean(v):null; })}));
+  hbar($("chSegRev"),$("lgSeg"),mkG(s=>s.rev),S,{lo:60,hi:100,fmt:v=>v.toFixed(0)+"%"});
+  const rec=mkG(s=>s.rec_delta); const m=Math.max(0.5,...rec.flatMap(x=>x.values).filter(v=>v!=null).map(Math.abs));
+  hbar($("chSegRec"),null,rec,S,{lo:-m,hi:m,zero:0,fmt:v=>(v>=0?"+":"")+v.toFixed(2)});
+}
+function probe(){
+  const Q=Object.keys(DATA.questions); const S=[{opt:"nodecision",label:"Karar yok",color:"--s-nd"},{opt:"locked_only",label:"Kilitli karar",color:"--s-lk"}];
+  const g=Q.map(q=>({label:`${q} ${DATA.questions[q]}`,values:S.map(s=>{ const v=R("base",s.opt).filter(r=>r.probe[q]).map(r=>r.probe[q][1]-r.probe[q][0]); return v.length?mean(v):null; })}));
+  const m=Math.max(0.3,...g.flatMap(x=>x.values).filter(v=>v!=null).map(Math.abs));
+  hbar($("chProbe"),$("lgProbe"),g,S,{lo:-m,hi:m,zero:0,fmt:v=>(v>=0?"+":"")+v.toFixed(2)});
+}
+let QT="engine";
+function quotes(){
+  const tabs=$("qTabs"); tabs.textContent=""; for (const [k,l] of [["engine","Motor krizi (W3–W5)"],["decision","Kararımız (W7)"],["strike","Grev haftası (W8)"],["after","Sonrası (W9–10)"]]){
+    const b=el("button",{type:"button","aria-pressed":String(QT===k),text:l}); b.onclick=()=>{QT=k; quotes();}; tabs.append(b); }
+  const all=R("base","locked_only").flatMap(r=>r.quotes); const pred={engine:q=>q.w>=3&&q.w<=5&&q.topic==="engine",decision:q=>q.w===7,strike:q=>q.w===8,after:q=>q.w>=9};
+  const pick=all.filter(pred[QT]); const seen=new Set(); const neg=[], pos=[];
+  for (const q of pick.sort((a,b)=>a.rec-b.rec)){ if(seen.has(q.p)) continue; if(q.rec<=4&&neg.length<4){neg.push(q);seen.add(q.p);} }
+  for (const q of pick.sort((a,b)=>b.rec-a.rec)){ if(seen.has(q.p)) continue; if(q.rec>=7&&pos.length<2){pos.push(q);seen.add(q.p);} }
+  const box=$("quotes"); box.textContent=""; if(!neg.length&&!pos.length){ box.append(el("p",{class:"note",text:"Bu konuda mesaj yok."})); return; }
+  for (const q of [...neg,...pos]){ const p=DATA.people[q.p]||{name:q.p,group:""};
+    box.append(el("blockquote",{class:q.rec<=4?"neg":"pos"},`“${q.t}”`,el("cite",{text:`${p.name} · ${p.group}${q.where?" · "+q.where:""} · W${q.w} · tavsiye ${q.rec}/10${q.fl.length?" · uçuş: "+q.fl.join(", "):""}`}))); }
+}
+header(); tiles(); timeline(); weekly(); engine(); lockTiles(); candidates(); segments(); probe(); quotes();
+</script>

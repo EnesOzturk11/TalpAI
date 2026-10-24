@@ -1,27 +1,23 @@
 {
-  "_note": "Decision 1 = locked W7 A3+A5 (config/locked.json). Decision 2 is still a PLACEHOLDER until the team locks it. 'target_rule' is ours and is kept out of run.json's decisions.",
+  "_note": "Decision 1 = W7 A3 (saved on TALP). Decision 2 = PLACEHOLDER until the team saves it.",
   "decisions": [
     {
       "week": 7,
       "target": "Passengers booked on Kestrel flights to or from Orlando or Philadelphia between December 21 and December 27",
       "target_rule": "week8_base",
-      "actions": [
-        {
-          "action": "Rebooking deal with a partner airline for 2 disrupted weeks",
-          "level": "on"
-        },
-        {
-          "action": "Free changes and cancellations for bookings in a 2-week window",
-          "level": "on"
-        }
-      ],
-      "message": "Kestrel Air: a 48-hour ground handling strike is planned at Orlando and Philadelphia on Dec 22-23, and flights on those days may be late or canceled. If you can travel on another day, move your flight now for free in the app: Dec 21 and Dec 24 still have seats. If you keep your flight and it is canceled, we will rebook you on Kestrel or a partner airline, or refund you in full if you prefer.",
       "channels": [
         "app",
         "email",
         "text message"
       ],
-      "why": "Own seats in week 8 are 97% booked, so moving people early and a partner airline are the cheapest protection.\nWe skip the backup contract and keep $2.55M in reserve for surprises.\nAn honest early warning is what passengers remember."
+      "actions": [
+        {
+          "action": "Free changes and cancellations for bookings in a 2-week window",
+          "level": "on"
+        }
+      ],
+      "message": "Kestrel Air update: workers at our ground handling contractor in Orlando and Philadelphia plan a 48-hour strike on Dec 22-23, so some flights may be late or canceled. If you are booked between Dec 14 and Dec 27, you can change or cancel for free in the app now: Dec 21 and Dec 24 still have seats. If your flight is canceled, we will rebook you on the next Kestrel flight with a free seat or refund you in full.",
+      "why": "With no action, 9% of customers leave and only 89-92% of week 5-10 revenue is kept.\nFree changes in week 7 move 6-9 of 36 customers off Dec 22-23 and keep 94-98% of revenue (+$7-11M).\nIt costs only $0.2M, cuts switching from 9% to 3-6%, and saves our second action for the next surprise."
     },
     {
       "week": 9,

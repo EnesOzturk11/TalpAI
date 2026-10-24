@@ -29,6 +29,40 @@
           }
         }
       ]
+    },
+    {
+      "id": "engine_inspection",
+      "kind": "surprise",
+      "announced_week": 3,
+      "title": "Engine Inspection Mandate",
+      "text": "Company update — week 3: The engine inspection: The FAA and the engine maker have told airlines to inspect a part on one engine type. Some of Kestrel's aircraft use it. A passenger's video of mechanics working on an engine at the gate is going round on TikTok. Known: the inspections are a precaution and start this week; no Kestrel aircraft has had a problem with this part. Not known: how many aircraft; how long each check takes; whether any part must be replaced.",
+      "updates": [],
+      "reading": "The FAA mandate requires precautionary inspections on some of Kestrel's engines starting this week, which is amplified by a viral TikTok video of gate maintenance. While no actual engine issues have been reported on our fleet, the uncertainty around inspection duration and potential part replacements could lead to minor schedule disruptions. We expect manageable delays and a low rate of cancellations as aircraft are briefly taken out of service for these checks.",
+      "effects": [
+        {
+          "dates": [
+            "2026-11-16",
+            "2026-11-17",
+            "2026-11-18",
+            "2026-11-19",
+            "2026-11-20",
+            "2026-11-21",
+            "2026-11-22"
+          ],
+          "bases": "all",
+          "cancel_rate": 0.05,
+          "delay_hours": 1.5,
+          "bags": false,
+          "assistance": false,
+          "cause": "Precautionary engine inspections mandated by the FAA",
+          "mitigated_by": {
+            "lease an aircraft with crew for 2 weeks": 0.6,
+            "free changes and cancellations for bookings in a 2-week window": 0.6,
+            "extra airport and call-center staff for 2 weeks": 0.6
+          }
+        }
+      ],
+      "source_announcement": "manual-w3-engine-inspection"
     }
   ]
 }

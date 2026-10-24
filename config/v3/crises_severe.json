@@ -1,0 +1,80 @@
+{
+  "_note": "One entry per crisis. 'text' is the dashboard/dossier wording, verbatim. 'reading' is how we read it (goes to TEAM_DOC). 'effects' is what the world model applies. kind=surprise entries are switched off in plan_nosurprises; the known crisis always stays.",
+  "crises": [
+    {
+      "id": "strike",
+      "kind": "known",
+      "announced_week": 1,
+      "title": "Ground handling strike at Orlando and Philadelphia",
+      "text": "Workers at Kestrel Air's ground handling contractor (baggage handlers, cabin cleaners, wheelchair agents and fuelers) have announced a 48-hour strike at Orlando (MCO) and Philadelphia (PHL) on Tuesday, December 22 and Wednesday, December 23. The contractor says it will bring in replacement staff \"where it can\". Turnarounds will be slower; some flights may be late or canceled. The union says the strike \"may be extended\". Talks continue.",
+      "updates": [],
+      "reading": "Medium scenario (research/field-research.md section 5): replacement staff cover part of the work, so a quarter of flights touching MCO/PHL on the strike days are canceled, the rest run about 3 hours late, bags and wheelchair help are slow. A backup ground handling contract cuts cancellations to about a third of that. We do not assume an extension in the base case.",
+      "effects": [
+        {
+          "dates": [
+            "2026-12-22",
+            "2026-12-23",
+            "2026-12-24"
+          ],
+          "bases": [
+            "MCO",
+            "PHL"
+          ],
+          "cancel_rate": 0.5,
+          "delay_hours": 5,
+          "bags": true,
+          "assistance": true,
+          "cause": "ground handling strike",
+          "mitigated_by": {
+            "backup ground handling contract at both bases for the strike days": 0.4
+          }
+        }
+      ]
+    },
+    {
+      "id": "engine_inspection",
+      "kind": "surprise",
+      "announced_week": 3,
+      "title": "Engine Inspection Mandate",
+      "text": "Company update — week 3: The engine inspection: The FAA and the engine maker have told airlines to inspect a part on one engine type. Some of Kestrel's aircraft use it. A passenger's video of mechanics working on an engine at the gate is going round on TikTok. Known: the inspections are a precaution and start this week; no Kestrel aircraft has had a problem with this part. Not known: how many aircraft; how long each check takes; whether any part must be replaced.",
+      "updates": [
+        {
+          "week": 4,
+          "text": "Company update — week 4: The inspections found worn parts on three Kestrel aircraft. They will stay on the ground for about two weeks while new parts arrive. All other aircraft have been cleared to fly. Kestrel will have to cancel or merge some flights in the next two weeks, Thanksgiving week included.",
+          "reading": "Three aircraft are grounded for two weeks during the busy Thanksgiving period, representing about 8% of Kestrel's 36-aircraft fleet. While the remaining fleet is cleared, the capacity reduction will force flight cancellations and mergers during Week 4 and Week 5. The airline must manage passenger disruptions and rebookings during a peak travel window."
+        }
+      ],
+      "reading": "The FAA mandate requires precautionary inspections on some of Kestrel's engines starting this week, which is amplified by a viral TikTok video of gate maintenance. While no actual engine issues have been reported on our fleet, the uncertainty around inspection duration and potential part replacements could lead to minor schedule disruptions. We expect manageable delays and a low rate of cancellations as aircraft are briefly taken out of service for these checks.",
+      "effects": [
+        {
+          "dates": [
+            "2026-11-23",
+            "2026-11-24",
+            "2026-11-25",
+            "2026-11-26",
+            "2026-11-27",
+            "2026-11-28",
+            "2026-11-29",
+            "2026-11-30",
+            "2026-12-01",
+            "2026-12-02",
+            "2026-12-03",
+            "2026-12-04",
+            "2026-12-05",
+            "2026-12-06"
+          ],
+          "bases": "all",
+          "cancel_rate": 0.08,
+          "delay_hours": 1.5,
+          "bags": false,
+          "assistance": false,
+          "cause": "Three aircraft grounded for engine parts replacement",
+          "mitigated_by": {
+            "lease an aircraft with crew for 2 weeks": 0.6
+          }
+        }
+      ],
+      "source_announcement": "manual-w3-engine-inspection"
+    }
+  ]
+}

@@ -244,12 +244,16 @@ class World:
         disrupted_flights = 0.0
         for i in range(7):
             day = week_start(week) + timedelta(days=i)
-            rate_base = BASELINE_CANCEL
+            rate_base, rate_all = BASELINE_CANCEL, BASELINE_CANCEL
             for e in self.effects_on(day, tuple(BASES)):
-                rate_base = max(rate_base, e["cancel_rate"] * self._mitigation(e, week))
+                r = e["cancel_rate"] * self._mitigation(e, week)
+                rate_base = max(rate_base, r)
+                if e["bases"] == "all":          # network-wide crises hit non-base flights too
+                    rate_all = max(rate_all, r)
             if self.has(week, "lease an aircraft"):
                 rate_base *= 0.8
-            rate = BASE_SHARE * rate_base + (1 - BASE_SHARE) * BASELINE_CANCEL
+                rate_all = max(BASELINE_CANCEL, rate_all * 0.8)
+            rate = BASE_SHARE * rate_base + (1 - BASE_SHARE) * rate_all
             merged = MERGE_SHARE if self.has(week, "merge low-load") else 0
             day_cancel = FLIGHTS_PER_DAY * min(1, rate + merged)
             worst = max(worst, 100 * day_cancel / FLIGHTS_PER_DAY)

@@ -110,5 +110,6 @@ def compute(all_personas, personas, weekly, world, probe):
             "say_do_gap": say_do,
             "fare_cap_lost_revenue_musd": price_actions,
             "n_personas": len(personas), "weeks": len(weeks),
+            "fleet": {str(w): {k: round(v, 1) for k, v in s.items()} for w, s in sorted(world.weekly_stats.items())},
         },
     }
