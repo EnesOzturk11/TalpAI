@@ -1,0 +1,44 @@
+{
+  "goal_1": 98.55,
+  "goal_2": 57.3,
+  "goal_3": -5.1,
+  "goal_3b": 0.78,
+  "goal_4": 90.3,
+  "units": {
+    "goal_1": "% of planned flights operated over weeks 1-10, strike days Dec 22-23 left out (fleet model)",
+    "goal_2": "% of passengers on canceled flights rebooked by Kestrel within 24h or refunded (persona-weighted, importance-weighted)",
+    "goal_3": "net promoter score at week 10: dossier's +12 plus the simulated change from week 1 (weighted 0-10 answers)",
+    "goal_3b": "complaint index: weighted % of persona-weeks with a complaint to Kestrel or DOT (compare with nodecision; last winter ~2,500/month)",
+    "goal_4": "% of planned weeks 5-10 ticket revenue still flown on Kestrel (sample legs x fare x persona weight, importance-weighted)"
+  },
+  "detail": {
+    "nps_raw_week1_week10": [
+      -45.5,
+      -62.6
+    ],
+    "goal_2_sample": {
+      "disrupted_legs": 16,
+      "ok": 7,
+      "ci95_unweighted": [
+        23.1,
+        66.8
+      ]
+    },
+    "dot_share_of_complaints_pct": 0.0,
+    "final_status_mix_pct": {
+      "flies as planned": 62.2,
+      "rebooked": 13.6,
+      "moved to another airline": 20.3,
+      "canceled the trip": 3.8
+    },
+    "final_book_again_pct": {
+      "yes": 52.7,
+      "maybe": 39.8,
+      "no": 7.5
+    },
+    "say_do_gap": null,
+    "fare_cap_lost_revenue_musd": 0,
+    "n_personas": 32,
+    "weeks": 10
+  }
+}

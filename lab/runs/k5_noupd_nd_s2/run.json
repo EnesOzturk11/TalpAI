@@ -1,0 +1,47 @@
+{
+  "company": "kestrel",
+  "type": "nodecision",
+  "seed": 2,
+  "model": "gemini-3.5-flash-lite",
+  "decisions": [],
+  "surprises": [
+    "The engine inspection"
+  ],
+  "surprise_variant": "as written",
+  "world_patch": {
+    "surprises": [
+      {
+        "week": 3,
+        "title": "The engine inspection",
+        "text": "The engine inspection. The FAA and the engine maker have told airlines to inspect a part on one engine type. Some of Kestrel's aircraft use it. A passenger's video of mechanics working on an engine at the gate is going round on TikTok. Known: the inspections are a precaution and start this week; no Kestrel aircraft has had a problem with this part. Not known: how many aircraft; how long each check takes; whether any part must be replaced.",
+        "reach": 0.75,
+        "cancel_x": 1.5,
+        "delay_x": 2.0,
+        "effect_weeks": 2,
+        "reach_if": {
+          "afraid_of_flying": "yes",
+          "news_sources": "tiktok|instagram"
+        },
+        "reach_high": 0.95,
+        "_reading": "SEVERE as written (team assumption): 75% hear it, 95% of those afraid of flying or on TikTok/Instagram; cancellations x1.5 and 3h+ delays x2 for weeks 3-4. MILD variant: 50% hear it, cancellations x1.1, delays x1.3, week 3 only. Week-4 update supersedes the precaution from week 4 on, so this entry now affects week 3 only.",
+        "variants": {
+          "mild": {
+            "reach": 0.5,
+            "cancel_x": 1.1,
+            "delay_x": 1.3,
+            "effect_weeks": 1
+          }
+        }
+      }
+    ]
+  },
+  "decision_set": "",
+  "customer_mix": {
+    "_note": "TEAM ASSUMPTION, share of Kestrel passengers by group (no public split: research section 5 [GAP]). Dossier: 'Price-conscious travelers: families visiting relatives, students, vacationers, and some small business travelers' plus agencies booking group tickets. Families first (holiday season, Christmas week 97% booked), vacationers next, students on winter break, 'some' business, agencies small but each books a whole group. Shares are passengers, not bookings. Each persona weighs its group's share split evenly over that group's personas.",
+    "families visiting relatives": 0.35,
+    "vacationers": 0.3,
+    "students": 0.15,
+    "business travelers": 0.1,
+    "travel agencies": 0.1
+  }
+}

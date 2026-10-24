@@ -1,0 +1,361 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Kestrel Sim Lab</title>
+<style>
+:root{--bg:#f6f7f9;--panel:#fff;--ink:#16191d;--mute:#5f6b7a;--line:#dde2e8;--acc:#0b63ce;--ok:#1f8a4c;--bad:#c2352b;--warn:#b7791f;
+--s1:#2e7d5b;--s2:#3b6fd8;--s3:#d9822b;--s4:#b8433a;--mono:ui-monospace,SFMono-Regular,Menlo,monospace;
+--c1:#2a78d6;--c2:#eb6834;--c3:#1baf7a;--c4:#eda100;--c5:#e87ba4;--c6:#008300;--c7:#4a3aa7;--c8:#e34948;--band:rgba(194,53,43,.08)}
+@media (prefers-color-scheme:dark){:root{--bg:#111418;--panel:#1a1f25;--ink:#e6e9ed;--mute:#97a3b1;--line:#2c333c;--acc:#5aa2ff;
+--c1:#3987e5;--c2:#d95926;--c3:#199e70;--c4:#c98500;--c5:#d55181;--c6:#008300;--c7:#9085e9;--c8:#e66767;--band:rgba(230,103,103,.12)}}
+.charts{display:grid;grid-template-columns:repeat(auto-fit,minmax(330px,1fr));gap:14px}
+.chart{position:relative}.chart svg{width:100%;height:auto;display:block;overflow:visible}
+.chart .tip{position:absolute;pointer-events:none;background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:6px 8px;font-size:12px;display:none;z-index:3;box-shadow:0 2px 8px rgba(0,0,0,.12);white-space:nowrap}
+.sw{display:inline-block;width:18px;height:0;border-top:2px solid;vertical-align:middle;margin-right:5px}
+.lgd{display:flex;flex-wrap:wrap;gap:6px 16px;font-size:12px;margin:4px 0 10px}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:14px/1.45 system-ui,-apple-system,sans-serif}
+header{display:flex;gap:16px;align-items:center;padding:10px 16px;border-bottom:1px solid var(--line);background:var(--panel);position:sticky;top:0;z-index:2;flex-wrap:wrap}
+header b{font-size:15px}nav{display:flex;gap:4px;flex-wrap:wrap}
+nav button{background:none;border:1px solid transparent;color:var(--mute);padding:6px 10px;border-radius:6px;cursor:pointer;font:inherit}
+nav button.on{color:var(--ink);border-color:var(--line);background:var(--bg)}
+#job{margin-left:auto;font-size:13px;color:var(--mute);display:flex;gap:8px;align-items:center}
+#job progress{width:140px}
+main{padding:16px;max-width:1300px;margin:0 auto}
+section{display:none}section.on{display:block}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:14px;margin-bottom:14px}
+.card h3{margin:0 0 10px;font-size:14px}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:end}
+label{display:flex;flex-direction:column;font-size:12px;color:var(--mute);gap:3px}
+input,select,textarea{font:inherit;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:6px;padding:6px 8px}
+textarea{font-family:var(--mono);font-size:12px;width:100%}
+button.b{background:var(--acc);color:#fff;border:0;border-radius:6px;padding:7px 12px;cursor:pointer;font:inherit}
+button.b.ghost{background:none;color:var(--acc);border:1px solid var(--line)}
+button.b:disabled{opacity:.5;cursor:default}
+table{border-collapse:collapse;width:100%;font-size:13px}th,td{text-align:left;padding:6px 8px;border-bottom:1px solid var(--line);vertical-align:top}
+th{color:var(--mute);font-weight:500;font-size:12px}
+.wrap{overflow-x:auto}
+pre{font-family:var(--mono);font-size:12px;white-space:pre-wrap;word-break:break-word;margin:0;background:var(--bg);padding:8px;border-radius:6px;max-height:360px;overflow:auto}
+.muted{color:var(--mute);font-size:12px}.ok{color:var(--ok)}.bad{color:var(--bad)}
+.pill{display:inline-block;padding:1px 7px;border-radius:10px;font-size:12px;color:#fff}
+.st0{background:var(--s1)}.st1{background:var(--s2)}.st2{background:var(--s3)}.st3{background:var(--s4)}
+.log{border:1px solid var(--line);border-radius:8px;padding:10px;margin-bottom:8px}
+.log summary{cursor:pointer;color:var(--mute);font-size:12px}
+.bubble{max-width:75%;padding:7px 10px;border-radius:10px;margin:4px 0;background:var(--bg)}
+.bubble.b{margin-left:auto;background:color-mix(in srgb,var(--acc) 15%,var(--panel))}
+.bars{display:flex;gap:6px;align-items:end;height:150px}
+.bar{flex:1;display:flex;flex-direction:column-reverse;height:100%;border-radius:4px;overflow:hidden;background:var(--bg)}
+.bar div{width:100%}
+.legend span{margin-right:12px;font-size:12px}.legend i{display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:4px}
+.ci{font-family:var(--mono);font-size:12px}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:14px}
+.tl{display:flex;gap:3px}.tl span{width:22px;height:22px;border-radius:4px;font-size:10px;color:#fff;display:flex;align-items:center;justify-content:center}
+</style>
+</head>
+<body>
+<header>
+  <b>Kestrel Sim Lab</b>
+  <nav id="tabs"></nav>
+  <div id="job"></div>
+</header>
+<main>
+
+<section id="run">
+  <div class="grid">
+    <div class="card">
+      <h3>1 · Personas</h3>
+      <div class="row">
+        <label>seed<input id="pseed" type="number" value="1" style="width:80px"></label>
+        <button class="b ghost" id="genbtn" onclick="genPersonas()">Draft missing personas with Gemini</button>
+      </div>
+      <p class="muted" id="pcount"></p>
+      <p class="muted">Personas come from <b>lab/code/personas/*.md</b>. Edit them in the Personas tab.</p>
+    </div>
+    <div class="card">
+      <h3>2 · Run a simulation</h3>
+      <div class="row">
+        <label>name<input id="rname" value="exp_1" style="width:140px"></label>
+        <label>kind<select id="rkind"><option>plan</option><option>nodecision</option><option>plan_nosurprises</option></select></label>
+        <label>seed<input id="rseed" type="number" value="1" style="width:80px"></label>
+        <label>decisions<select id="rset"></select></label>
+        <button class="b" onclick="startRun()">Run</button>
+      </div>
+      <div class="row" style="margin-top:10px">
+        <button class="b ghost" onclick="runSubmission()">Run the 5 submission runs</button>
+        <span class="muted">nodecision_1, nodecision_2, plan_1, plan_2, plan_nosurprises, one after another (nodecision_1 first: it is the complaint baseline)</span>
+      </div>
+    </div>
+    <div class="card">
+      <h3>Decision sets · budget</h3>
+      <p class="muted">decisions.json = the plan you lock (used by the 5 submission runs). Others: candidates.json.</p>
+      <div id="budget"></div>
+    </div>
+  </div>
+  <div class="card">
+    <h3>Runs</h3>
+    <div class="wrap" id="runs"></div>
+  </div>
+  <div class="card">
+    <h3>Submission check (check.py on lab/)</h3>
+    <button class="b ghost" onclick="runCheck()">Run check.py</button>
+    <pre id="checkout" style="margin-top:10px;display:none"></pre>
+  </div>
+</section>
+
+<section id="personas">
+  <div class="card">
+    <h3>personas/ <span class="muted">· one .md file per persona in lab/code/personas/. Every persona uses the same prompt templates; its catalog sections (### A. Demographic … ### I, plus ### J. Kestrel Air (sector)) fill $profile and its '### custom' text fills $custom. Format: personas/_FORMAT.md</span></h3>
+    <div id="pproblems"></div>
+    <div class="row" style="margin-bottom:8px">
+      <label>file<select id="pfile" onchange="loadMd()"></select></label>
+      <button class="b" onclick="saveMd()">Save</button>
+      <button class="b ghost" onclick="newPersona()">New persona</button>
+      <button class="b ghost" onclick="deleteMd()">Delete file</button>
+      <span id="mdmsg" class="muted"></span>
+    </div>
+    <textarea id="mdtext" rows="24" spellcheck="false"></textarea>
+  </div>
+  <div class="card">
+    <h3>Parsed personas <span class="muted">· click "prompt" to see exactly what Gemini receives</span></h3>
+    <div class="wrap" id="ptable"></div>
+  </div>
+  <div class="card" id="pvcard" style="display:none"><h3 id="pvtitle"></h3><pre id="pvtext"></pre></div>
+</section>
+
+<section id="logs">
+  <div class="card row">
+    <label>run<select id="lrun" onchange="loadLogs()"></select></label>
+    <label>persona<select id="lpersona" onchange="drawLogs()"></select></label>
+    <label>week<select id="lweek" onchange="drawLogs()"></select></label>
+    <label>kind<select id="lkind" onchange="drawLogs()"><option value="">all</option><option>act</option><option>chat</option><option>probe</option></select></label>
+    <label>search<input id="lq" oninput="drawLogs()" placeholder="text in response"></label>
+  </div>
+  <div class="card" id="timeline" style="display:none"></div>
+  <div id="loglist"></div>
+</section>
+
+<section id="chats">
+  <div class="card row">
+    <label>run<select id="crun" onchange="loadChats()"></select></label>
+    <label>week<select id="cweek" onchange="drawChats()"></select></label>
+    <label>persona<select id="cpersona" onchange="drawChats()"></select></label>
+  </div>
+  <div class="grid" id="chatlist"></div>
+</section>
+
+<section id="stats">
+  <div class="card">
+    <h3>Pick runs to analyze</h3>
+    <div id="srunlist" class="row"></div>
+    <div class="row" style="margin-top:10px"><button class="b" onclick="analyze()">Analyze</button></div>
+  </div>
+  <div id="sout"></div>
+</section>
+
+<section id="config">
+  <div class="card">
+    <div class="row">
+      <label>file<select id="cfgname" onchange="loadCfg()"><option>prompts.json</option><option>world.json</option><option>decisions.json</option><option>candidates.json</option></select></label>
+      <button class="b" onclick="saveCfg()">Save</button>
+      <span id="cfgmsg" class="muted"></span>
+    </div>
+    <p class="muted">Templates use <code>$name</code> placeholders. prompts.json: persona_system, weekly, chat, probe (same for every persona), persona_gen (draft only). Personas: edit in the Personas tab. world.json: rates (team assumptions), surprises, action effects, costs.</p>
+    <textarea id="cfgtext" rows="34" spellcheck="false"></textarea>
+  </div>
+</section>
+</main>
+
+<script>
+const STATUSES=["flies as planned","rebooked","moved to another airline","canceled the trip"];
+const SHORT={"flies as planned":"F","rebooked":"R","moved to another airline":"M","canceled the trip":"C"};
+const TABS=[["run","Run"],["personas","Personas"],["logs","Response logs"],["chats","Conversations"],["stats","Statistics"],["config","Prompt config"]];
+let S={runs:[],personas:[],job:{}}, queue=[], L={calls:[],weekly:[]}, C={chats:[]};
+const $=id=>document.getElementById(id);
+const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const pct=w=>w&&w[0]!=null?`${(w[0]*100).toFixed(0)}% <span class="muted">[${(w[1]*100).toFixed(0)}–${(w[2]*100).toFixed(0)}]</span>`:"–";
+const pill=s=>`<span class="pill st${STATUSES.indexOf(s)}">${esc(s)}</span>`;
+async function api(path,opt={}){const r=await fetch(path,opt);const t=await r.text();let d;try{d=JSON.parse(t)}catch{d=t}
+  if(!r.ok)throw new Error(d.error||t);return d}
+const jl=t=>t.split("\n").filter(x=>x.trim()).map(x=>JSON.parse(x));
+const text=p=>fetch(p).then(r=>r.ok?r.text():"");
+const post=(p,b)=>api(p,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(b)});
+
+$("tabs").innerHTML=TABS.map(([id,t])=>`<button data-t="${id}" onclick="tab('${id}')">${t}</button>`).join("");
+function tab(id){document.querySelectorAll("section").forEach(s=>s.classList.toggle("on",s.id===id));
+  document.querySelectorAll("nav button").forEach(b=>b.classList.toggle("on",b.dataset.t===id));
+  if(id==="config"&&!$("cfgtext").value)loadCfg();if(id==="personas"&&!$("mdtext").value)loadMd();try{localStorage.tab=id}catch{}}
+
+async function refresh(){
+  const was=S.job;S=await api("/api/state");
+  const j=S.job;
+  if(was.state==="running"&&j.state==="done"&&j.label==="generate personas"){$("mdtext").value="";$("pfile").dataset.sig=""}
+  $("job").innerHTML=j.state==="running"?`<span>${esc(j.label)}</span><progress max="${j.total||1}" value="${j.done}"></progress><span>${j.done}/${j.total||"?"}</span>`
+    :j.state==="error"?`<span class="bad">${esc(j.label)} failed: ${esc(j.error)}</span>`
+    :j.state==="done"?`<span class="ok">${esc(j.label)} done</span>`:"idle";
+  $("pcount").textContent=`${S.personas.length} active personas in ${new Set(S.personas.map(p=>p.group)).size} groups · ${S.persona_missing.length} missing (to draft)`;
+  $("budget").innerHTML=Object.entries(S.budgets).map(([k,b])=>`<div><b>${esc(k||"decisions.json")}</b>: <span class="${b.ok?"ok":"bad"}">$${b.total_musd}M of $${b.limit_musd}M</span>${b.problems.map(p=>`<div class="bad">${esc(p)}</div>`).join("")}</div>`).join("");
+  const rs=$("rset").value,sets=Object.keys(S.budgets);
+  if($("rset").dataset.sig!==sets.join()){$("rset").dataset.sig=sets.join();$("rset").innerHTML=sets.map(k=>`<option value="${esc(k)}">${esc(k||"decisions.json")}</option>`).join("");if(sets.includes(rs))$("rset").value=rs}
+  $("runs").innerHTML=S.runs.length?`<table><tr><th>run</th><th>type</th><th>decisions</th><th>seed</th><th>model</th><th>goal_1 flights %</th><th>goal_2 rebook 24h %</th><th>goal_3 complaints/mo</th><th>goal_3b NPS</th><th>goal_4 revenue %</th></tr>`+
+    S.runs.map(r=>`<tr><td>${esc(r.name)}</td><td>${r.type}</td><td>${esc(r.decision_set||"–")}</td><td>${r.seed}</td><td class="${r.model==="MOCK"?"bad":""}">${esc(r.model)}</td>`+
+    ["goal_1","goal_2","goal_3","goal_3b","goal_4"].map(k=>`<td>${r.metrics[k]??"–"}</td>`).join("")+"</tr>").join("")+"</table>":`<p class="muted">no runs yet</p>`;
+  const opts=S.runs.map(r=>`<option>${esc(r.name)}</option>`).join("");
+  for(const id of ["lrun","crun"]){const v=$(id).value;$(id).innerHTML=opts;if(v)$(id).value=v}
+  if($("lrun").value&&L.run!==$("lrun").value)loadLogs();   // first run appears: load it, no change event needed
+  if($("crun").value&&C.run!==$("crun").value)loadChats();
+  const checked=new Set([...document.querySelectorAll("#srunlist input:checked")].map(x=>x.value));
+  $("srunlist").innerHTML=S.runs.map(r=>`<label style="flex-direction:row;align-items:center;gap:4px"><input type="checkbox" value="${esc(r.name)}" ${checked.has(r.name)?"checked":""}>${esc(r.name)}</label>`).join("");
+  const fsig=Object.keys(S.persona_files).join();if($("pfile").dataset.sig!==fsig){$("pfile").dataset.sig=fsig;drawFiles();if(!$("mdtext").value)loadMd()}
+  $("pproblems").innerHTML=S.persona_problems.map(p=>`<div class="bad">${esc(p)}</div>`).join("");
+  const sig=JSON.stringify([S.personas,S.weights]);if($("ptable").dataset.sig!==sig){$("ptable").dataset.sig=sig;drawPersonas()}
+  if(j.state!=="running"&&queue.length){const n=queue.shift();await post("/api/run",n).catch(e=>{alert(e.message);queue=[]})}
+}
+setInterval(()=>refresh().catch(()=>{}),1500);
+
+async function genPersonas(){const m=S.persona_missing;if(!m.length)return alert("No missing personas: every id in prompts.json persona_groups has a file.");
+  if(!confirm(`Draft ${m.length} new personas with Gemini (${m.length} API calls)? Existing files are kept.\n${m.join(", ")}`))return;
+  await post("/api/personas",{seed:+$("pseed").value}).catch(e=>alert(e.message));refresh()}
+async function startRun(){await post("/api/run",{name:$("rname").value,kind:$("rkind").value,seed:+$("rseed").value,decisions:$("rset").value}).catch(e=>alert(e.message));refresh()}
+function runSubmission(){queue=[["nodecision_1","nodecision",1],["nodecision_2","nodecision",2],["plan_1","plan",1],["plan_2","plan",2],["plan_nosurprises","plan_nosurprises",1]]
+  .map(([name,kind,seed])=>({name,kind,seed}));refresh()}
+async function runCheck(){$("checkout").style.display="block";$("checkout").textContent="running…";
+  const r=await api("/api/check",{method:"POST"}).catch(e=>({output:e.message}));$("checkout").textContent=r.output}
+
+function drawPersonas(){
+  const cols=["id","group","name","age","state","route","trip_weeks","reason_for_the_trip"];
+  const g={};S.personas.forEach(p=>g[p.group]=(g[p.group]||0)+1);
+  $("ptable").innerHTML=`<p class="muted">${Object.entries(g).map(([k,v])=>`${esc(k)}: ${v}`).join(" · ")||"no personas"} — challenge needs ≥24 personas, ≥3 groups, ≥4 per group. Weight = the group's share in world.json customer_mix (team assumption) split over its personas; all statistics and board goals use it.</p>`+
+    `<table><tr>${cols.map(c=>`<th>${c}</th>`).join("")}<th>weight<br><span class="muted">% of passengers</span></th><th>catalog sections (fields)</th><th>custom</th><th></th></tr>`+
+    S.personas.map(p=>`<tr>${cols.map(c=>`<td>${esc(Array.isArray(p[c])?p[c].join(", "):p[c])}</td>`).join("")}
+    <td>${S.weights[p.id]!=null?(S.weights[p.id]*100).toFixed(1)+"%":"–"}</td>
+    <td class="muted">${Object.entries(p.sections).map(([s,ks])=>`<span title="${esc(ks.join(", "))}">${esc(s.split(". ")[0])}:${ks.length}</span>`).join(" ")}</td>
+    <td class="muted" style="max-width:260px">${esc(p.custom)||"–"}</td>
+    <td><button class="b ghost" onclick="preview('${esc(p.id)}')">prompt</button></td></tr>`).join("")+"</table>";
+}
+async function preview(id){$("pvcard").style.display="block";$("pvtitle").textContent=`${id} · persona prompt (system part; the weekly/chat/probe template follows it)`;
+  $("pvtext").textContent=await api("/api/preview?id="+encodeURIComponent(id)).catch(e=>e.message);$("pvcard").scrollIntoView({behavior:"smooth"})}
+function drawFiles(){const v=$("pfile").value,names=Object.keys(S.persona_files);
+  if(v&&!names.includes(v))names.push(v);  // a new file not saved yet
+  $("pfile").innerHTML=names.map(n=>`<option value="${esc(n)}">${esc(n)}</option>`).join("");if(v)$("pfile").value=v}
+async function loadMd(){const n=$("pfile").value;$("mdtext").value=n?await api("/api/persona_file?name="+encodeURIComponent(n)).catch(e=>e.message):"";$("mdmsg").textContent=""}
+async function saveMd(){const n=$("pfile").value;if(!n)return newPersona();
+  await api("/api/persona_file?name="+encodeURIComponent(n),{method:"POST",body:$("mdtext").value})
+  .then(()=>{$("mdmsg").innerHTML=`<span class="ok">saved ${esc(n)}</span>`;refresh()}).catch(e=>$("mdmsg").innerHTML=`<span class="bad">${esc(e.message)}</span>`)}
+async function newPersona(){const id=prompt("New persona id (letters, digits, _ or -), e.g. stu06");if(!id)return;
+  const n=id.trim()+".md";if(n in S.persona_files)return alert(n+" exists");
+  $("pfile").innerHTML+=`<option>${esc(n)}</option>`;$("pfile").value=n;await loadMd();
+  $("mdmsg").innerHTML=`<span class="muted">new file: fill the fields, then Save</span>`}
+async function deleteMd(){const n=$("pfile").value;if(!n||!confirm("Delete "+n+"?"))return;
+  await api("/api/persona_file?name="+encodeURIComponent(n),{method:"POST",body:""}).then(()=>{$("pfile").value="";$("mdtext").value="";refresh()}).catch(e=>alert(e.message))}
+
+const kindOf=c=>c.id.includes("-act-")?"act":c.id.includes("-chat-")?"chat":c.id.startsWith("probe")?"probe":"other";
+async function loadLogs(){const n=$("lrun").value;if(!n)return;L.run=n;
+  const [calls,weekly]=await Promise.all(["calls.jsonl","weekly.jsonl"].map(f=>text(`/api/run?name=${n}&file=${f}`).then(jl)));
+  L={calls,weekly,run:n};
+  $("lpersona").innerHTML=`<option value="">all</option>`+[...new Set(calls.map(c=>c.persona).filter(Boolean))].map(p=>`<option>${esc(p)}</option>`).join("");
+  $("lweek").innerHTML=`<option value="">all</option>`+[...Array(12).keys()].map(w=>`<option>${w}</option>`).join("");
+  drawLogs()}
+function drawLogs(){
+  const p=$("lpersona").value,w=$("lweek").value,k=$("lkind").value,q=$("lq").value.toLowerCase();
+  const byCall=Object.fromEntries(L.weekly.map(r=>[r.call,r]));
+  const rows=L.calls.filter(c=>(!p||c.persona===p)&&(w===""||c.week==w)&&(!k||kindOf(c)===k)&&(!q||c.response.toLowerCase().includes(q)));
+  const tl=$("timeline");
+  if(p){const ws=L.weekly.filter(r=>r.persona===p).sort((a,b)=>a.week-b.week);tl.style.display="block";
+    tl.innerHTML=`<h3>${esc(p)} · weekly status</h3><div class="tl">`+ws.map(r=>`<span class="st${STATUSES.indexOf(r.status)}" title="week ${r.week}: ${esc(r.status)}; trip: ${esc(r.trip?.outcome||"none")}; book again: ${r.book_again}">${SHORT[r.status]}</span>`).join("")+
+    `</div><p class="muted">F flies · R rebooked · M moved · C canceled — hover for the trip outcome</p>`}else tl.style.display="none";
+  $("loglist").innerHTML=`<p class="muted">${rows.length} calls</p>`+rows.slice(0,300).map(c=>{
+    const wr=byCall[c.id];let resp=c.response;try{resp=JSON.stringify(JSON.parse(c.response),null,2)}catch{}
+    return `<div class="log"><div class="row" style="justify-content:space-between"><b>${esc(c.id)}</b><span>${wr?pill(wr.status)+" book again: "+esc(wr.book_again)+(wr.trip?" · flight: "+esc(wr.trip.outcome):""):""} <span class="muted">week ${c.week}</span></span></div>
+    <pre style="margin-top:6px">${esc(resp)}</pre><details><summary>prompt</summary><pre>${esc(c.prompt)}</pre></details></div>`}).join("")+(rows.length>300?`<p class="muted">first 300 shown; filter to see more</p>`:"")}
+
+async function loadChats(){const n=$("crun").value;if(!n)return;C.run=n;
+  C.chats=jl(await text(`/api/run?name=${n}&file=chats.jsonl`));
+  C.names=Object.fromEntries(S.personas.map(p=>[p.id,p.name+" · "+p.group]));
+  $("cweek").innerHTML=`<option value="">all</option>`+[...Array(10).keys()].map(w=>`<option>${w+1}</option>`).join("");
+  $("cpersona").innerHTML=`<option value="">all</option>`+S.personas.map(p=>`<option>${esc(p.id)}</option>`).join("");drawChats()}
+function drawChats(){const w=$("cweek").value,p=$("cpersona").value;
+  const rows=C.chats.filter(c=>(!w||c.week==w)&&(!p||c.a===p||c.b===p));
+  $("chatlist").innerHTML=rows.length?rows.map(c=>`<div class="card"><h3>week ${c.week}: ${esc(C.names[c.a]||c.a)} ↔ ${esc(C.names[c.b]||c.b)}</h3>`+
+    c.dialogue.map(d=>`<div class="bubble ${d.speaker==="B"?"b":""}"><span class="muted">${esc(d.speaker==="A"?c.a:c.b)}</span><br>${esc(d.text)}</div>`).join("")+
+    `<p class="muted">A takes away: ${esc(c.a_takeaway)}<br>B takes away: ${esc(c.b_takeaway)}</p></div>`).join(""):`<p class="muted">no conversations</p>`}
+
+async function analyze(){
+  const names=[...document.querySelectorAll("#srunlist input:checked")].map(x=>x.value);
+  if(!names.length)return alert("pick runs");
+  const s=await api("/api/stats?runs="+encodeURIComponent(names.join(","))).catch(e=>alert(e.message));if(!s)return;setShown(s.trends);
+  const keys=[["goal_1","flights operated %, ≥98 · world assumption, not persona output"],["goal_2","rebooked in 24h %, ≥90 · world assumption, not persona output"],["goal_3","% passengers complaining / week"],["goal_3b","NPS proxy · read the Δ, not the level"],["goal_4","revenue wk5–10 %, ≥96 · read the Δ"],["lost_any","% passengers lost (moved or canceled) at any week"],["blame_8_10","% blaming Kestrel, weeks 8–10 (early signal)"]];
+  let h=`<div class="card"><h3>Board goals by decision <span class="muted">mean (min–max over seeds) · [95% bootstrap interval of the mean, personas resampled within groups]</span></h3><div class="wrap"><table><tr><th>decision</th><th>runs</th>${keys.map(k=>`<th>${k[0]}<br><span class="muted">${k[1]}</span></th>`).join("")}</tr>`+
+    Object.entries(s.compare).map(([t,c])=>`<tr><td><i class="sw" style="border-color:${seriesColor(t)}"></i>${esc(t)}</td><td>${c.runs}</td>${keys.map(([k])=>`<td>${c[k].mean} <span class="muted">(${c[k].min}–${c[k].max})</span>${c.boot&&c.boot[k]?`<br><span class="ci">[${c.boot[k][0]}–${c.boot[k][1]}]</span>`:""}${c.delta&&c.delta[k]!=null?`<br><b>Δ ${c.delta[k]>0?"+":""}${c.delta[k]}</b> <span class="muted">vs nodecision</span>`:""}</td>`).join("")}</tr>`).join("")+`</table></div></div>`;
+  h+=trendsHtml(s.trends);
+  for(const r of s.runs){
+    h+=`<div class="card"><h3>${esc(r.name)} · ${r.type} · seed ${r.seed}</h3>
+    <div class="legend">${STATUSES.map((x,i)=>`<span><i class="st${i}"></i>${x}</span>`).join("")}</div>
+    <div class="bars">${Object.entries(r.weekly).map(([w,d])=>`<div style="flex:1;text-align:center"><div class="bar" style="height:130px">${STATUSES.map((x,i)=>`<div class="st${i}" style="height:${(d[x][0]||0)*100}%" title="week ${w} ${x}: ${((d[x][0]||0)*100).toFixed(0)}%"></div>`).join("")}</div><span class="muted">w${w}</span></div>`).join("")}</div>
+    <div class="wrap" style="margin-top:12px"><table><tr><th>group</th><th>n</th><th>left at any week<br><span class="muted">moved or canceled</span></th>${STATUSES.map(x=>`<th>week 10: ${x}</th>`).join("")}<th>book again: yes</th><th>book again: no</th><th>said "stay", then left<br><span class="muted">say-do gap</span></th><th>blame when disrupted</th></tr>`+
+    Object.entries(r.groups).map(([g,d])=>`<tr${g==="ALL"?' style="font-weight:600"':""}><td>${esc(g)}</td><td>${d.n}</td><td class="ci">${pct(d.ever_lost)}</td>${STATUSES.map(x=>`<td class="ci">${pct(d.status_week10[x])}</td>`).join("")}
+      <td class="ci">${pct(d.book_again_week10.yes)}</td><td class="ci">${pct(d.book_again_week10.no)}</td><td class="ci">${pct(d.say_do_gap.then_left)} <span class="muted">of ${d.say_do_gap.said_stay}</span></td>
+      <td class="muted">${Object.entries(d.blame_when_disrupted).map(([k,v])=>`${esc(k)}: ${v}`).join("<br>")||"–"}</td></tr>`).join("")+`</table></div>
+    <details style="margin-top:10px"><summary class="muted">actions and check-in means per group</summary><div class="wrap"><table><tr><th>group</th><th>top actions (per persona-week)</th><th>check-in, aligned 1–5 (2b, 4b reversed): start → end</th></tr>`+
+    Object.entries(r.groups).map(([g,d])=>`<tr><td>${esc(g)}</td><td>${Object.entries(d.actions_per_persona_week).map(([a,v])=>`${esc(a)}: ${v}`).join("<br>")}</td>
+      <td class="ci">${Object.entries(d.probe_aligned_mean).map(([q,v])=>`${q}: ${v.start??"–"} → ${v.end??"–"}`).join("<br>")}</td></tr>`).join("")+`</table></div></details></div>`}
+  h+=`<div class="card"><h3>Decision brief (markdown)</h3><textarea rows="16" id="brief">${esc(s.brief)}</textarea>
+    <div class="row" style="margin-top:8px"><button class="b ghost" onclick="dl()">Download DECISION_BRIEF.md</button></div>
+    <p class="muted">Brackets are 95% Wilson intervals over personas. Compare plan vs nodecision across both seeds before you trust a difference.</p></div>`;
+  $("sout").innerHTML=h;bindCharts()}
+
+// ---- trend line charts: one chart per metric, one line per decision (seeds averaged) ----
+const CW=360,CH=210,CL=34,CR=12,CT=14,CB=28,CHARTS={};
+let SHOWN=[];  // decisions in the current analysis, in config order
+function setShown(t){const order=["nodecision",...Object.keys(S.budgets).map(k=>k||"decisions.json")];
+  SHOWN=[...new Set(Object.keys(t.lines).map(l=>l.replace(" (no surprises)","")))].sort((a,b)=>order.indexOf(a)-order.indexOf(b))}
+function seriesColor(label){const base=label.replace(" (no surprises)","");
+  // ponytail: slot = rank among the decisions shown (max 8 lines); stable within one analysis, can shift between analyses
+  const i=SHOWN.indexOf(base);return `var(--c${Math.min(i<0?7:i,7)+1})`}
+const dashOf=l=>l==="nodecision"?"6 4":l.endsWith("(no surprises)")?"2 3":"";
+const cx=w=>CL+(w-1)*(CW-CL-CR)/9;
+function trendsHtml(t){
+  const labels=Object.keys(t.lines);
+  if(SHOWN.length>8)return `<div class="card bad">Pick at most 8 decisions for the trend charts (now ${SHOWN.length}); the goals table above covers all.</div>`;
+  let h=`<div class="card"><h3>Weekly trends by decision <span class="muted">· each line is one decision; runs with the same decision (different seeds) are averaged · shaded week 8 = strike</span></h3>
+    <div class="lgd">${labels.map(l=>`<span><i class="sw" style="border-color:${seriesColor(l)};border-top-style:${dashOf(l)?"dashed":"solid"}"></i>${esc(l)} <span class="muted">(${t.lines[l].runs.length} run${t.lines[l].runs.length>1?"s":""})</span></span>`).join("")}</div><div class="charts">`;
+  for(const m of t.metrics){
+    const vals=labels.flatMap(l=>t.lines[l].series[m.key]);
+    const ymax=m.key==="satisfaction"?100:Math.max(10,Math.ceil(Math.max(...vals)/10)*10);
+    const y=v=>CT+(CH-CT-CB)*(1-v/ymax);CHARTS[m.key]={m,t,labels,ymax};
+    const grid=[0,ymax/2,ymax].map(v=>`<line x1="${CL}" x2="${CW-CR}" y1="${y(v)}" y2="${y(v)}" stroke="var(--line)"/><text x="${CL-6}" y="${y(v)+4}" text-anchor="end" font-size="10" fill="var(--mute)">${v}</text>`).join("");
+    const xt=[...Array(10).keys()].map(i=>`<text x="${cx(i+1)}" y="${CH-CB+16}" text-anchor="middle" font-size="10" fill="var(--mute)">${i+1}</text>`).join("");
+    const band=`<rect x="${cx(7.5)}" y="${CT}" width="${cx(8.5)-cx(7.5)}" height="${CH-CT-CB}" fill="var(--band)"/><text x="${cx(8)}" y="${CT-3}" text-anchor="middle" font-size="9" fill="var(--mute)">strike</text>`;
+    const lines=labels.map(l=>{const v=t.lines[l].series[m.key],c=seriesColor(l);
+      return `<polyline fill="none" stroke="${c}" stroke-width="2" stroke-linejoin="round" stroke-dasharray="${dashOf(l)}" points="${v.map((d,i)=>`${cx(i+1)},${y(d)}`).join(" ")}"/>`+
+        v.map((d,i)=>`<circle cx="${cx(i+1)}" cy="${y(d)}" r="3.5" fill="${c}" stroke="var(--panel)" stroke-width="2"/>`).join("")}).join("");
+    h+=`<div class="chart" data-m="${m.key}"><b style="font-size:13px">${esc(m.title)}</b><div class="muted">${esc(m.note)}</div>
+      <svg viewBox="0 0 ${CW} ${CH}" role="img" aria-label="${esc(m.title)} by week and decision">${band}${grid}${xt}
+      <text x="${(CL+CW-CR)/2}" y="${CH-2}" text-anchor="middle" font-size="10" fill="var(--mute)">week</text>${lines}
+      <line class="xh" x1="0" x2="0" y1="${CT}" y2="${CH-CB}" stroke="var(--mute)" stroke-dasharray="3 3" visibility="hidden"/>
+      <rect class="hit" x="${CL}" y="0" width="${CW-CL-CR}" height="${CH-CB}" fill="transparent"/></svg><div class="tip"></div>
+      <details><summary class="muted">table</summary><div class="wrap"><table><tr><th>decision</th>${[...Array(10).keys()].map(i=>`<th>w${i+1}</th>`).join("")}</tr>
+      ${labels.map(l=>`<tr><td>${esc(l)}</td>${t.lines[l].series[m.key].map(v=>`<td>${v}</td>`).join("")}</tr>`).join("")}</table></div></details></div>`}
+  return h+`</div></div>`}
+function bindCharts(){document.querySelectorAll(".chart").forEach(el=>{
+  const {m,t,labels}=CHARTS[el.dataset.m],svg=el.querySelector("svg"),xh=el.querySelector(".xh"),tip=el.querySelector(".tip");
+  const hit=el.querySelector(".hit");
+  hit.addEventListener("mousemove",e=>{const r=svg.getBoundingClientRect(),vx=(e.clientX-r.left)*CW/r.width;
+    const wk=Math.min(10,Math.max(1,Math.round((vx-CL)/((CW-CL-CR)/9))+1));
+    xh.setAttribute("x1",cx(wk));xh.setAttribute("x2",cx(wk));xh.setAttribute("visibility","visible");
+    const rows=labels.map(l=>[l,t.lines[l].series[m.key][wk-1]]).sort((a,b)=>b[1]-a[1]);
+    tip.innerHTML=`<b>week ${wk}</b>${wk===8?' <span class="muted">· strike</span>':""}<br>`+rows.map(([l,v])=>`<i class="sw" style="border-color:${seriesColor(l)}"></i>${esc(l)}: <b>${v}</b>`).join("<br>");
+    tip.style.display="block";const er=el.getBoundingClientRect(),px=r.left-er.left+cx(wk)*r.width/CW;  // SVG has no offsetTop/Left
+    tip.style.left=(px+tip.offsetWidth+16>el.clientWidth?px-tip.offsetWidth-10:px+10)+"px";tip.style.top=(r.top-er.top+8)+"px"});
+  hit.addEventListener("mouseleave",()=>{xh.setAttribute("visibility","hidden");tip.style.display="none"})})}
+function dl(){const a=document.createElement("a");a.href=URL.createObjectURL(new Blob([$("brief").value],{type:"text/markdown"}));a.download="DECISION_BRIEF.md";a.click()}
+
+async function loadCfg(){$("cfgtext").value=await api("/api/config?name="+$("cfgname").value);$("cfgmsg").textContent=""}
+async function saveCfg(){if($("cfgname").value.endsWith(".json"))try{JSON.parse($("cfgtext").value)}catch(e){$("cfgmsg").innerHTML=`<span class="bad">invalid JSON: ${esc(e.message)}</span>`;return}
+  await api("/api/config?name="+$("cfgname").value,{method:"POST",body:$("cfgtext").value}).then(()=>{$("cfgmsg").innerHTML=`<span class="ok">saved</span>`;refresh()}).catch(e=>$("cfgmsg").innerHTML=`<span class="bad">${esc(e.message)}</span>`)}
+
+let first="run";try{first=localStorage.tab||"run"}catch{}
+tab(first);refresh().then(()=>{loadLogs();loadChats()}).catch(e=>console.error(e));
+</script>
+</body>
+</html>

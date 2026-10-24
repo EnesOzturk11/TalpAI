@@ -1,0 +1,57 @@
+{
+  "company": "kestrel",
+  "type": "plan",
+  "seed": 2,
+  "model": "gemini-3.5-flash-lite",
+  "decisions": [
+    {
+      "week": 7,
+      "target": "everyone",
+      "actions": [
+        {
+          "action": "Free changes and cancellations for bookings in a 2-week window",
+          "level": "on"
+        }
+      ],
+      "message": "Kestrel Air: a 48-hour ground handling strike is planned at Orlando and Philadelphia on Dec 22-23, and flights on those days may be late or canceled. The union says the strike may be extended. If you can travel on another day, move your flight now for free in the app; days before Dec 22 are the safest. If you keep your flight and it is canceled, we will rebook you on the next Kestrel flight with a free seat, or refund you in full if you prefer. All our aircraft are back in service after the engine inspections.",
+      "channels": [
+        "app",
+        "email",
+        "text"
+      ],
+      "why": "Own seats in week 8 are 97% booked, so moving people off the strike days early is the cheapest protection.\nThe strike-day response follows in week 8, once we know whether the strike is extended.\nAn honest early warning is what passengers remember."
+    },
+    {
+      "week": 8,
+      "target": "everyone",
+      "actions": [
+        {
+          "action": "Backup ground handling contract at both bases for the strike days",
+          "level": "on"
+        }
+      ],
+      "message": "Kestrel Air: the ground handling strike at Orlando and Philadelphia is on December 22-23. We have contracted backup ground crews at both airports so that most flights run; some may still be late. If your flight is canceled or delayed over 3 hours, we will rebook you on the next Kestrel flight with a free seat, or refund you in full. Check the app for your flight status.",
+      "channels": [
+        "app",
+        "email",
+        "text"
+      ],
+      "why": "Backup crews keep most strike-day flights running, which protects every passenger at both bases.\nThey are the only insurance if the union extends the strike.\nFewer cancellations is what passengers remember."
+    }
+  ],
+  "surprises": [
+    "The engine inspection",
+    "The engine inspection: three aircraft grounded"
+  ],
+  "surprise_variant": "as written",
+  "world_patch": {},
+  "decision_set": "F_S1_free7_backup8",
+  "customer_mix": {
+    "_note": "TEAM ASSUMPTION, share of Kestrel passengers by group (no public split: research section 5 [GAP]). Dossier: 'Price-conscious travelers: families visiting relatives, students, vacationers, and some small business travelers' plus agencies booking group tickets. Families first (holiday season, Christmas week 97% booked), vacationers next, students on winter break, 'some' business, agencies small but each books a whole group. Shares are passengers, not bookings. Each persona weighs its group's share split evenly over that group's personas.",
+    "families visiting relatives": 0.35,
+    "vacationers": 0.3,
+    "students": 0.15,
+    "business travelers": 0.1,
+    "travel agencies": 0.1
+  }
+}

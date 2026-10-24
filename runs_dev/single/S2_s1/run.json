@@ -1,0 +1,85 @@
+{
+  "company": "kestrel",
+  "type": "plan",
+  "seed": 1,
+  "model": "gemini-3.5-flash-lite",
+  "decisions": [
+    {
+      "week": 7,
+      "target": "Passengers booked on Kestrel flights to or from Orlando or Philadelphia between December 21 and December 27",
+      "actions": [
+        {
+          "action": "Free changes and cancellations for bookings in a 2-week window",
+          "level": "on"
+        }
+      ],
+      "channels": [
+        "app",
+        "email",
+        "text message"
+      ],
+      "message": "Kestrel Air: a 48-hour ground handling strike is planned at Orlando and Philadelphia on Dec 22-23, and flights on those days may be late or canceled. If you can travel on another day, move your flight now for free in the app: Dec 21 and Dec 24 still have seats. If you keep your flight and it is canceled, we will rebook you on the next Kestrel flight with a free seat, or refund you in full if you prefer. All our aircraft are back in service after the engine inspections.",
+      "why": "Own seats in week 8 are 97% booked, so moving people off the strike days early is the cheapest protection.\nThe strike-day response follows in week 8, once we know whether the strike is extended.\nAn honest early warning is what passengers remember."
+    },
+    {
+      "week": 8,
+      "target": "Passengers booked on Kestrel flights at Orlando or Philadelphia on December 22-23",
+      "actions": [
+        {
+          "action": "Hotel rooms held for stranded passengers, whatever the cause",
+          "level": "on"
+        }
+      ],
+      "channels": [
+        "app",
+        "email",
+        "text message"
+      ],
+      "message": "Kestrel Air: the ground handling strike at Orlando and Philadelphia is on December 22-23, and flights on those days may be late or canceled. If your flight is canceled or delayed over 3 hours, we will rebook you on the next Kestrel flight with a free seat, or refund you in full. If you are stranded overnight for any reason, a hotel room is held for you at no cost; show your boarding pass at the Kestrel desk.",
+      "why": "Families and vacationers are 88% of week-8 passengers; being stranded without a bed is what they remember.\nNext free Kestrel seats can be days away in a 97%-booked week.\nA hotel promise is cheap and easy to keep."
+    }
+  ],
+  "cost_musd": 0.4,
+  "targeting": {
+    "1": {
+      "rule": "week8_base",
+      "personas": [
+        "P025",
+        "P033",
+        "P056",
+        "P069",
+        "P095",
+        "P109",
+        "P115",
+        "P128",
+        "P161",
+        "P173",
+        "P180",
+        "P197",
+        "P204",
+        "P242",
+        "P244",
+        "P279",
+        "P294"
+      ]
+    },
+    "2": {
+      "rule": "strike_exposed",
+      "personas": [
+        "P025",
+        "P033",
+        "P056",
+        "P069",
+        "P115",
+        "P161",
+        "P197",
+        "P244",
+        "P294"
+      ]
+    }
+  },
+  "crises": [
+    "strike",
+    "engine_inspection"
+  ]
+}

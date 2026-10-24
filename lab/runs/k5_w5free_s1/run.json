@@ -1,0 +1,57 @@
+{
+  "company": "kestrel",
+  "type": "plan",
+  "seed": 1,
+  "model": "gemini-3.5-flash-lite",
+  "decisions": [
+    {
+      "week": 5,
+      "target": "everyone",
+      "actions": [
+        {
+          "action": "Free changes and cancellations for bookings in a 2-week window",
+          "level": "on"
+        }
+      ],
+      "message": "Kestrel Air: inspections found worn parts on three of our aircraft; they stay on the ground for about two weeks while new parts arrive, and all other aircraft are cleared to fly. Some flights in the next two weeks may be canceled or merged. Until December 13 you can change or cancel any booking free of charge in the app; if your flight is canceled, we will rebook you on the next Kestrel flight with a free seat, or refund you in full.",
+      "channels": [
+        "app",
+        "email",
+        "text"
+      ],
+      "why": "People who cannot risk a cancellation can move without paying.\nIt costs little and gives passengers control.\nControl is what anxious passengers remember."
+    },
+    {
+      "week": 8,
+      "target": "everyone",
+      "actions": [
+        {
+          "action": "Hotel rooms held for stranded passengers, whatever the cause",
+          "level": "on"
+        }
+      ],
+      "message": "Kestrel Air: the ground handling strike at Orlando and Philadelphia is on December 22-23, and flights on those days may be late or canceled. If your flight is canceled or delayed over 3 hours, we will rebook you on the next Kestrel flight with a free seat, or refund you in full. If you are stranded overnight for any reason, a hotel room is held for you at no cost; show your boarding pass at the Kestrel desk.",
+      "channels": [
+        "app",
+        "email",
+        "text"
+      ],
+      "why": "Families and vacationers are 88% of week-8 passengers; being stranded without a bed is what they remember.\nNext free Kestrel seats can be days away in a 97%-booked week.\nA hotel promise is cheap and easy to keep."
+    }
+  ],
+  "surprises": [
+    "The engine inspection",
+    "The engine inspection: three aircraft grounded"
+  ],
+  "surprise_variant": "as written",
+  "world_patch": {},
+  "decision_set": "W5_free5_hotel8",
+  "customer_mix": {
+    "_note": "TEAM ASSUMPTION, share of Kestrel passengers by group (no public split: research section 5 [GAP]). Dossier: 'Price-conscious travelers: families visiting relatives, students, vacationers, and some small business travelers' plus agencies booking group tickets. Families first (holiday season, Christmas week 97% booked), vacationers next, students on winter break, 'some' business, agencies small but each books a whole group. Shares are passengers, not bookings. Each persona weighs its group's share split evenly over that group's personas.",
+    "families visiting relatives": 0.35,
+    "vacationers": 0.3,
+    "students": 0.15,
+    "business travelers": 0.1,
+    "travel agencies": 0.1
+  }
+}

@@ -1,0 +1,93 @@
+{
+  "company": "kestrel",
+  "type": "plan",
+  "seed": 1,
+  "model": "gemini-3.5-flash-lite",
+  "decisions": [
+    {
+      "week": 7,
+      "target": "Passengers booked on Kestrel flights to or from Orlando or Philadelphia between December 21 and December 27",
+      "actions": [
+        {
+          "action": "Rebooking deal with a partner airline for 2 disrupted weeks",
+          "level": "on"
+        },
+        {
+          "action": "Free changes and cancellations for bookings in a 2-week window",
+          "level": "on"
+        }
+      ],
+      "message": "Kestrel Air: a 48-hour ground handling strike is planned at Orlando and Philadelphia on Dec 22-23, and flights on those days may be late or canceled. If you can travel on another day, move your flight now for free in the app: Dec 21 and Dec 24 still have seats. If you keep your flight and it is canceled, we will rebook you on Kestrel or a partner airline, or refund you in full if you prefer.",
+      "channels": [
+        "app",
+        "email",
+        "text message"
+      ],
+      "why": "Own seats in week 8 are 97% booked, so moving people early and a partner airline are the cheapest protection.\nWe skip the backup contract and keep $2.55M in reserve for surprises.\nAn honest early warning is what passengers remember."
+    },
+    {
+      "week": 8,
+      "target": "Passengers booked on Kestrel flights at Orlando or Philadelphia on December 22-23",
+      "actions": [
+        {
+          "action": "Hotel rooms held for stranded passengers, whatever the cause",
+          "level": "on"
+        },
+        {
+          "action": "Extra airport and call-center staff for 2 weeks",
+          "level": "on"
+        },
+        {
+          "action": "Backup ground handling contract at both bases for the strike days",
+          "level": "on"
+        }
+      ],
+      "message": "Kestrel Air: the ground handling strike at Orlando and Philadelphia is on December 22-23. We have contracted backup ground crews at both airports and added airport and call-center staff for the next two weeks. If your flight is canceled or delayed over 3 hours, we will rebook you on Kestrel or a partner airline, or refund you in full. If you are stranded overnight for any reason, a hotel room is held for you at no cost; show your boarding pass at the Kestrel desk.",
+      "channels": [
+        "app",
+        "email",
+        "text message"
+      ],
+      "why": "Families and vacationers are 88% of week-8 passengers; being stranded without a bed is what they remember.\nBackup crews are the only insurance if the union extends the strike.\nStaff on the phones keeps the 24-hour rebooking promise real."
+    }
+  ],
+  "cost_musd": 1.3,
+  "targeting": {
+    "1": {
+      "rule": "week8_base",
+      "personas": [
+        "P025",
+        "P033",
+        "P056",
+        "P069",
+        "P095",
+        "P109",
+        "P115",
+        "P128",
+        "P161",
+        "P173",
+        "P180",
+        "P197",
+        "P204",
+        "P242",
+        "P244",
+        "P279",
+        "P294"
+      ]
+    },
+    "2": {
+      "rule": "strike_exposed",
+      "personas": [
+        "P025",
+        "P033",
+        "P069",
+        "P115",
+        "P197"
+      ]
+    }
+  },
+  "crises": [
+    "strike",
+    "engine_inspection"
+  ]
+}

@@ -1,0 +1,22 @@
+{
+  "company": "kestrel",
+  "type": "nodecision",
+  "seed": 2,
+  "model": "gemini-3.5-flash-lite",
+  "decisions": [],
+  "surprises": [
+    "The engine inspection",
+    "The engine inspection: three aircraft grounded"
+  ],
+  "surprise_variant": "as written",
+  "world_patch": {},
+  "decision_set": "",
+  "customer_mix": {
+    "_note": "TEAM ASSUMPTION, share of Kestrel passengers by group (no public split: research section 5 [GAP]). Dossier: 'Price-conscious travelers: families visiting relatives, students, vacationers, and some small business travelers' plus agencies booking group tickets. Families first (holiday season, Christmas week 97% booked), vacationers next, students on winter break, 'some' business, agencies small but each books a whole group. Shares are passengers, not bookings. Each persona weighs its group's share split evenly over that group's personas.",
+    "families visiting relatives": 0.35,
+    "vacationers": 0.3,
+    "students": 0.15,
+    "business travelers": 0.1,
+    "travel agencies": 0.1
+  }
+}

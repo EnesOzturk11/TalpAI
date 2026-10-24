@@ -1,0 +1,120 @@
+{
+  "company": "kestrel",
+  "type": "plan",
+  "seed": 2,
+  "model": "gemini-3.5-flash-lite",
+  "decisions": [
+    {
+      "week": 5,
+      "target": "Everyone with a Kestrel booking",
+      "actions": [
+        {
+          "action": "Lease an aircraft with crew for 2 weeks",
+          "level": "1 aircraft"
+        },
+        {
+          "action": "Free changes and cancellations for bookings in a 2-week window",
+          "level": "on"
+        }
+      ],
+      "message": "Kestrel Air: inspections found worn parts on three of our aircraft; they stay on the ground for about two weeks while new parts arrive, and all other aircraft are cleared to fly. We have leased an extra aircraft with crew to cover most of the gap. Some flights in the next two weeks may still be canceled or merged; if yours is, we will text you with a new seat or a full refund. Until December 6 you can change or cancel any booking free of charge in the app.",
+      "channels": [
+        "app",
+        "email",
+        "text message"
+      ],
+      "why": "Three grounded aircraft hit Thanksgiving travellers, most of our weighted passengers.\nA leased aircraft replaces one of the three.\nFree changes let people who cannot wait move without paying."
+    },
+    {
+      "week": 7,
+      "target": "Passengers booked on Kestrel flights to or from Orlando or Philadelphia between December 21 and December 27",
+      "actions": [
+        {
+          "action": "Rebooking deal with a partner airline for 2 disrupted weeks",
+          "level": "on"
+        },
+        {
+          "action": "Backup ground handling contract at both bases for the strike days",
+          "level": "on"
+        },
+        {
+          "action": "Hotel rooms held for stranded passengers, whatever the cause",
+          "level": "on"
+        }
+      ],
+      "message": "Kestrel Air: a 48-hour ground handling strike is planned at Orlando and Philadelphia on Dec 22-23, and flights on those days may be late or canceled. If you can travel on another day, move your flight now for free in the app: Dec 21 and Dec 24 still have seats. If you keep your flight and it is canceled, we will rebook you on Kestrel or a partner airline, or refund you in full if you prefer. Hotel rooms are held for anyone stranded overnight.",
+      "channels": [
+        "app",
+        "email",
+        "text message"
+      ],
+      "why": "Own seats in week 8 are 97% booked, so a partner airline is the cheapest protection.\nBackup crews are the only insurance if the union extends the strike.\nA hotel bed is what stranded families remember."
+    }
+  ],
+  "cost_musd": 1.85,
+  "targeting": {
+    "1": {
+      "rule": "all",
+      "personas": [
+        "P002",
+        "P009",
+        "P025",
+        "P031",
+        "P033",
+        "P041",
+        "P048",
+        "P056",
+        "P069",
+        "P095",
+        "P107",
+        "P109",
+        "P115",
+        "P124",
+        "P126",
+        "P128",
+        "P161",
+        "P167",
+        "P173",
+        "P180",
+        "P197",
+        "P202",
+        "P204",
+        "P228",
+        "P241",
+        "P242",
+        "P244",
+        "P269",
+        "P279",
+        "P284",
+        "P287",
+        "P294"
+      ]
+    },
+    "2": {
+      "rule": "week8_base",
+      "personas": [
+        "P025",
+        "P033",
+        "P056",
+        "P069",
+        "P095",
+        "P109",
+        "P115",
+        "P128",
+        "P161",
+        "P173",
+        "P180",
+        "P197",
+        "P204",
+        "P242",
+        "P244",
+        "P279",
+        "P294"
+      ]
+    }
+  },
+  "crises": [
+    "strike",
+    "engine_inspection"
+  ]
+}

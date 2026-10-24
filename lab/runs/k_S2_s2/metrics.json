@@ -1,0 +1,15 @@
+{
+  "goal_1": 89.53,
+  "goal_2": 69.77,
+  "goal_3": 2.1,
+  "goal_3b": -69.0,
+  "goal_4": 88.58,
+  "units": {
+    "goal_1": "% of persona flights operated, strike days excluded (target >= 98). Driven by world.json assumptions (action_effects), not persona behaviour",
+    "goal_2": "% of canceled or 3h+ delayed persona flights rebooked or refunded within 24h (target >= 90; 100 if none). Driven by world.json assumptions (action_effects), not persona behaviour",
+    "goal_3": "% of passengers (weighted) who complain (app, DOT, card dispute) in an average week, weeks 1-10",
+    "goal_3b": "NPS proxy from end check-in 3a: % 5s minus % 1-3s. Personas are not calibrated to the +12 baseline: read it as a difference from nodecision, not as a level",
+    "goal_4": "% of planned fare revenue weeks 5-10 kept on Kestrel by personas with a flight then (target >= 96)"
+  },
+  "note": "weighted by world.json customer_mix (team assumption); persona counts are small, read with the dashboard's intervals"
+}
