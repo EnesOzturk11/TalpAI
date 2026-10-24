@@ -1,0 +1,32 @@
+{
+  "_label": "W7 · Kalkan",
+  "_blurb": "Yedek yer hizmetleri + partner + ücretsiz değişiklik, grevden 1 hafta önce",
+  "decisions": [
+    {
+      "week": 7,
+      "target": "Passengers booked on Kestrel flights to or from Orlando or Philadelphia between December 21 and December 27",
+      "target_rule": "week8_base",
+      "actions": [
+        {
+          "action": "Backup ground handling contract at both bases for the strike days",
+          "level": "on"
+        },
+        {
+          "action": "Rebooking deal with a partner airline for 2 disrupted weeks",
+          "level": "on"
+        },
+        {
+          "action": "Free changes and cancellations for bookings in a 2-week window",
+          "level": "on"
+        }
+      ],
+      "message": "Kestrel Air update: workers at our ground handling contractor in Orlando and Philadelphia plan a 48-hour strike on Dec 22-23. We have hired a backup ground handling team for both airports, but some flights may still be late or canceled. If you are booked between Dec 14 and Dec 27, you can change or cancel for free in the app now. If your flight is canceled, we will rebook you on Kestrel or a partner airline, or give you a full refund if you prefer. We will text you first if anything changes.",
+      "channels": [
+        "app",
+        "email",
+        "text message"
+      ],
+      "why": "Own seats in week 8 are 97% booked, so most strike-day passengers can only be protected by moving early or by a partner airline.\nThe backup contract lowers cancellations on the days that count for goal 2 and insures against an extension that would count for goal 1.\nTelling people a week ahead, honestly, is what the CEO says passengers remember."
+    }
+  ]
+}

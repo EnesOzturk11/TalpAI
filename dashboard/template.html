@@ -1,0 +1,472 @@
+<title>Kestrel Karar Odası</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo+Narrow:wght@500;600;700&family=Source+Sans+3:wght@400;600;700&family=JetBrains+Mono:wght@400;600&display=swap">
+<style>
+/* Layout: an airline ops room. Departure-board strip on top, strategy board, trend chart, then the two conversation rooms side by side. */
+:root{
+  --paper:#f5f6f3; --panel:#ffffff; --ink:#152033; --muted:#5d6878; --line:#d9dde2; --soft:#eceff1;
+  --amber:#b86e00; --amber-soft:#fbefd9; --good:#1f7a4d; --bad:#b3372a; --warn:#9a6a00;
+  --c1:#6b7280; --c2:#1d5fb8; --c3:#0f8a8a; --c4:#b86e00; --c5:#8a3fb0; --c6:#c2410c; --c7:#2f7d32; --c8:#a3264b; --c9:#5b5bd6;
+  --display:"Archivo Narrow","Arial Narrow",system-ui,sans-serif;
+  --body:"Source Sans 3",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --mono:"JetBrains Mono",ui-monospace,"SF Mono",Menlo,monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --paper:#0e1522; --panel:#152033; --ink:#e7ebf0; --muted:#9aa6b6; --line:#27344a; --soft:#1b273b;
+  --amber:#f2a93b; --amber-soft:#3a2c14; --good:#4cc38a; --bad:#f07a6b; --warn:#e3b341;
+  --c1:#9aa3b1; --c2:#6aa7ff; --c3:#3fd1cf; --c4:#f2a93b; --c5:#c58cf0; --c6:#ff8a5c; --c7:#6fcf73; --c8:#ff7aa2; --c9:#9b9bff; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --paper:#0e1522; --panel:#152033; --ink:#e7ebf0; --muted:#9aa6b6; --line:#27344a; --soft:#1b273b;
+  --amber:#f2a93b; --amber-soft:#3a2c14; --good:#4cc38a; --bad:#f07a6b; --warn:#e3b341;
+  --c1:#9aa3b1; --c2:#6aa7ff; --c3:#3fd1cf; --c4:#f2a93b; --c5:#c58cf0; --c6:#ff8a5c; --c7:#6fcf73; --c8:#ff7aa2; --c9:#9b9bff; color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--paper);color:var(--ink);font:16px/1.5 var(--body);margin:0}
+.wrap{max-width:1240px;margin:0 auto;padding-block:20px 48px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));display:grid;gap:28px}
+h1,h2,h3{font-family:var(--display);letter-spacing:.01em;text-wrap:balance;margin:0}
+h1{font-size:2rem;font-weight:700}
+h2{font-size:1.35rem;font-weight:600}
+h3{font-size:1.05rem;font-weight:600}
+.eyebrow{font:600 .72rem/1 var(--mono);letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+.muted{color:var(--muted)}
+.num{font-family:var(--mono);font-variant-numeric:tabular-nums}
+section{display:grid;gap:12px;min-width:0}
+.head{display:flex;flex-wrap:wrap;align-items:end;justify-content:space-between;gap:16px}
+.board{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.slot{font:600 .8rem/1 var(--mono);padding:8px 10px;border-radius:4px;background:var(--soft);color:var(--muted);border:1px solid var(--line)}
+.slot.next{background:var(--amber-soft);color:var(--amber);border-color:var(--amber)}
+.slot.past{opacity:.5;text-decoration:line-through}
+.seg{display:inline-flex;border:1px solid var(--line);border-radius:6px;overflow:hidden}
+.seg button{font:600 .85rem var(--body);background:var(--panel);color:var(--muted);border:0;padding:8px 12px;cursor:pointer}
+.seg button[aria-pressed="true"]{background:var(--ink);color:var(--paper)}
+button,select,input,textarea{font:inherit;color:inherit}
+button:focus-visible,select:focus-visible,input:focus-visible,textarea:focus-visible,tr:focus-visible{outline:2px solid var(--amber);outline-offset:2px}
+.tablebox{overflow-x:auto;background:var(--panel);border:1px solid var(--line);border-radius:8px}
+table{border-collapse:collapse;width:100%;min-width:980px}
+th,td{padding:10px 12px;text-align:left;border-bottom:1px solid var(--line);vertical-align:middle}
+th{font:600 .7rem/1.2 var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--muted);background:var(--soft)}
+tbody tr{cursor:pointer}
+tbody tr:hover{background:var(--soft)}
+tbody tr.sel{background:var(--amber-soft)}
+.pk{display:flex;align-items:center;gap:8px;font-weight:600}
+.dot{width:10px;height:10px;border-radius:50%;flex:none}
+.blurb{font-size:.82rem;color:var(--muted);font-weight:400}
+.delta{font:600 .72rem var(--mono);margin-left:4px}
+.up{color:var(--good)} .down{color:var(--bad)} .flat{color:var(--muted)}
+.range{position:relative;height:8px;background:var(--soft);border-radius:4px;width:110px;margin-top:4px}
+.range i{position:absolute;top:0;bottom:0;background:var(--amber);border-radius:4px;opacity:.85}
+.ci{font-size:.75rem;color:var(--muted)}
+.votebtn{border:1px solid var(--line);background:var(--panel);border-radius:6px;padding:6px 10px;cursor:pointer;font-weight:600;white-space:nowrap}
+.votebtn.mine{background:var(--ink);color:var(--paper);border-color:var(--ink)}
+.votebtn:disabled{opacity:.5;cursor:not-allowed}
+.faces{display:flex;gap:2px;margin-top:4px}
+.faces img{width:20px;height:20px;border-radius:50%;border:1px solid var(--panel)}
+.grid2{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(0,1fr);gap:20px}
+@media (max-width:900px){.grid2{grid-template-columns:minmax(0,1fr)}}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:16px;display:grid;gap:12px;min-width:0}
+.chartbox{overflow-x:auto}
+svg text{fill:var(--muted);font:11px var(--mono)}
+.legend{display:flex;flex-wrap:wrap;gap:6px 14px;font-size:.82rem}
+.legend span{display:inline-flex;align-items:center;gap:6px}
+.dec{display:grid;gap:10px;border-top:1px solid var(--line);padding-top:12px}
+.dec:first-of-type{border-top:0;padding-top:0}
+.kv{display:grid;grid-template-columns:110px minmax(0,1fr);gap:4px 12px;font-size:.92rem}
+.kv dt{color:var(--muted)}
+.kv dd{margin:0;min-width:0}
+.msg{background:var(--soft);border-left:3px solid var(--amber);padding:10px 12px;border-radius:4px;font-size:.92rem;white-space:pre-wrap}
+.chip{display:inline-block;font:600 .7rem/1 var(--mono);padding:4px 7px;border-radius:999px;background:var(--soft);color:var(--muted);border:1px solid var(--line)}
+.chip.bad{color:var(--bad);border-color:var(--bad)} .chip.good{color:var(--good);border-color:var(--good)} .chip.warn{color:var(--warn);border-color:var(--warn)}
+.copy{justify-self:start;border:1px solid var(--line);background:var(--panel);border-radius:6px;padding:6px 10px;cursor:pointer;font-size:.85rem}
+.filters{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.filters select,.filters input[type=search]{border:1px solid var(--line);background:var(--panel);border-radius:6px;padding:6px 8px;min-width:0}
+.feed{display:grid;gap:10px;max-height:640px;overflow-y:auto;padding-right:4px}
+.post{display:grid;grid-template-columns:36px minmax(0,1fr);gap:10px;padding:10px;border:1px solid var(--line);border-radius:8px;background:var(--panel)}
+.av{width:36px;height:36px;border-radius:50%;display:grid;place-items:center;font:700 .85rem var(--display);color:#fff}
+.post .who{font-weight:600}
+.post .meta{font-size:.78rem;color:var(--muted)}
+.post p{margin:4px 0}
+.reach{font-size:.78rem;color:var(--muted)}
+.chat{display:grid;gap:8px;max-height:520px;overflow-y:auto}
+.cm{display:grid;grid-template-columns:28px minmax(0,1fr);gap:8px}
+.cm img{width:28px;height:28px;border-radius:50%}
+.cm .meta{font-size:.75rem;color:var(--muted)}
+.cm p{margin:2px 0;white-space:pre-wrap;overflow-wrap:anywhere}
+.composer{display:grid;gap:8px}
+.composer textarea{width:100%;min-height:72px;border:1px solid var(--line);border-radius:6px;padding:8px;background:var(--panel);resize:vertical}
+.composer .row{display:flex;flex-wrap:wrap;gap:8px;align-items:center;justify-content:space-between}
+.send{background:var(--ink);color:var(--paper);border:0;border-radius:6px;padding:8px 14px;font-weight:600;cursor:pointer}
+.send:disabled{opacity:.5;cursor:not-allowed}
+.note{font-size:.85rem;color:var(--muted)}
+.empty{padding:16px;border:1px dashed var(--line);border-radius:8px;color:var(--muted);font-size:.9rem}
+.crises{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,340px),1fr));gap:12px}
+.crisis{background:var(--panel);border:1px solid var(--line);border-left:4px solid var(--amber);border-radius:6px;padding:12px 14px;display:grid;gap:6px;min-width:0}
+.crisis.surprise{border-left-color:var(--bad)}
+.crisis p{margin:0;font-size:.9rem}
+.bars{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,280px),1fr));gap:16px}
+.bar-card{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:14px;display:grid;gap:8px;min-width:0}
+.bar-row{display:grid;grid-template-columns:minmax(0,150px) minmax(0,1fr) 64px;gap:8px;align-items:center;font-size:.82rem}
+.bar-row .lab{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.bar-row.sel .lab{font-weight:700}
+.track{position:relative;height:14px;background:var(--soft);border-radius:3px}
+.track i{position:absolute;top:0;bottom:0;left:0;border-radius:3px}
+.track b{position:absolute;top:-3px;bottom:-3px;width:2px;background:var(--ink);opacity:.5}
+.bar-row .val{font:600 .78rem var(--mono);text-align:right;font-variant-numeric:tabular-nums}
+.sv td,.sv th{text-align:center} .sv td:first-child,.sv th:first-child{text-align:left}
+.sv .cell{font:600 .82rem var(--mono)} .sv .d{display:block;font-size:.7rem}
+.wk{font:600 .7rem/1 var(--mono);padding:3px 6px;border-radius:4px;background:var(--ink);color:var(--paper)}
+.cd{display:grid;gap:12px}
+.cd-rec{background:var(--amber-soft);border:1px solid var(--amber);border-radius:8px;padding:12px 14px;display:grid;gap:4px}
+.cell3{display:grid;gap:3px;font-size:.8rem}
+.cell3 .g{font:600 .82rem var(--mono)}
+.badges{display:flex;flex-wrap:wrap;gap:3px}
+.badge{font:600 .64rem/1 var(--mono);padding:3px 5px;border-radius:3px;border:1px solid var(--line)}
+.badge.ok{color:var(--good);border-color:var(--good)} .badge.no{color:var(--bad);border-color:var(--bad)}
+details.cand{border:1px solid var(--line);border-radius:8px;background:var(--panel);padding:10px 12px}
+details.cand summary{cursor:pointer;font-weight:600}
+.caveat{font-size:.85rem;color:var(--muted);border-left:3px solid var(--line);padding-left:10px}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+
+<div class="wrap">
+  <header class="head">
+    <div>
+      <div class="eyebrow">team-01 · Kestrel Air · TALP Simulation Lab</div>
+      <h1>Kestrel Karar Odası</h1>
+      <div class="muted" id="sub">36 persona · her deney tek karar · iki seed. Simüle edilmiş sonuçlar; gerçek ölçüm değil.</div>
+    </div>
+    <div class="board" id="deadlines" aria-label="Kilit saatleri (İstanbul)"></div>
+  </header>
+
+  <section>
+    <div class="head"><h2>Krizler ve okumamız</h2><span class="note" id="updated"></span></div>
+    <div class="crises" id="crises"></div>
+  </section>
+
+  <section id="crisisDecSection" hidden>
+    <div class="head"><h2>Kriz kararları</h2><span class="note" id="lockedNote"></span></div>
+    <div class="cd" id="crisisDec"></div>
+  </section>
+
+  <section>
+    <div class="head">
+      <h2>Stratejiler</h2>
+      <div class="seg" role="group" aria-label="Grev senaryosu" id="scen"></div>
+    </div>
+    <div class="note" id="scenNote"></div>
+    <div class="tablebox"><table>
+      <thead><tr>
+        <th>Karar (her deneyde tek karar)</th><th>Maliyet</th><th>G1 uçuş</th><th>G2 24 saatte çözüm</th><th>G3 NPS</th>
+        <th>Şikâyet endeksi</th><th>G4 gelir (W5–10)</th><th>Başka havayolu</th><th>Uçuşunu kaydıran</th><th>Takım oyu</th>
+      </tr></thead>
+      <tbody id="rows"></tbody>
+    </table></div>
+    <div class="caveat">Her satır tek bir kararın sonucudur: o karar dışında Kestrel olağan politikasıyla devam eder. G2 iki seed birleştirilerek hesaplandı; parantez içi %95 güven aralığı. Aralıklar örtüşüyorsa paketler G2'de ayırt edilemiyor. Uçak kiralama, fiyat tavanı/indirimi ve uçuş birleştirme henüz modelde etkisiz.</div>
+  </section>
+
+  <div class="grid2">
+    <section class="card">
+      <div class="head">
+        <h3>Haftalık gidişat</h3>
+        <div class="seg" role="group" aria-label="Grafik ölçüsü" id="metricSeg"></div>
+      </div>
+      <div class="chartbox"><svg id="chart" viewBox="0 0 640 280" width="100%" role="img" aria-label="Haftalık trend"></svg></div>
+      <div class="legend" id="legend"></div>
+    </section>
+    <section class="card" id="detail"></section>
+  </div>
+
+  <section>
+    <div class="head"><h2>Hangi karar hangi sonucu getirdi</h2><span class="note">Çubuk: iki seed ortalaması · ince çizgi: karar yok</span></div>
+    <div class="bars" id="bars"></div>
+  </section>
+
+  <section>
+    <div class="head"><h2>Persona anketi (check-in soruları)</h2><span class="note">Model yapılandırılmış JSON ile 1–5 puan verdi; başta ve 10. haftadan sonra</span></div>
+    <div class="tablebox"><table class="sv"><thead id="svHead"></thead><tbody id="svBody"></tbody></table></div>
+    <div class="caveat">Hücrede 10. hafta sonrası ortalama, altında başa göre değişim. ⇅ işaretli sorular ters sorulmuştur: yüksek puan kötüdür, renkler buna göre çevrildi. Son sütun 8 sorunun yönü düzeltilmiş ortalaması.</div>
+  </section>
+
+  <div class="grid2">
+    <section class="card">
+      <div class="head"><h3>Persona konuşmaları</h3><span class="note" id="talkCount"></span></div>
+      <div class="filters">
+        <label class="note" for="fPkg">Paket</label><select id="fPkg"></select>
+        <label class="note" for="fSeed">Seed</label><select id="fSeed"><option value="1">1</option><option value="2">2</option></select>
+        <label class="note" for="fWeek">Hafta</label><select id="fWeek"></select>
+        <label class="note"><input type="checkbox" id="fPub"> yalnızca herkese açık</label>
+        <input type="search" id="fQ" placeholder="Ara: isim, kelime" aria-label="Konuşmalarda ara">
+      </div>
+      <div class="feed" id="feed"></div>
+    </section>
+    <section class="card">
+      <div class="head"><h3>Takım sohbeti</h3><span class="note" id="chatState">Bağlanıyor…</span></div>
+      <div class="chat" id="chat"><div class="empty">Henüz mesaj yok. İlk mesajı aşağıdan yazın; seçtiğiniz paketi etiketleyebilirsiniz.</div></div>
+      <form class="composer" id="composer">
+        <textarea id="chatText" maxlength="1000" placeholder="Örn: E paketini kilitleyelim mi? Yedek sözleşmenin faydası görünmüyor."></textarea>
+        <div class="row">
+          <label class="note">Etiket <select id="chatTag"><option value="">yok</option></select></label>
+          <button class="send" id="sendBtn" type="submit" disabled>Gönder</button>
+        </div>
+      </form>
+    </section>
+  </div>
+</div>
+
+<script>
+const DATA = /*__DATA__*/null;
+const PK_ORDER = ["nodecision", ...Object.keys(DATA.packages).filter(k=>k!=="nodecision")];
+const COLORS = Object.fromEntries(PK_ORDER.map((k,i)=>[k,"--c"+(i%9+1)]));
+const decWeek = pkg => DATA.packages[pkg]?.decisions?.[0]?.week || null;
+const decActs = pkg => (DATA.packages[pkg]?.decisions?.[0]?.actions||[]).map(a=>a.action.replace(/ for (2 (disrupted )?weeks|the strike days|bookings in a 2-week window)|, (whatever the cause|up to 10,000 passengers)/g,"")+(a.level!=="on"?` (${a.level})`:"")).join(" + ");
+const DEADLINES = [["W7 kilit","16:00"],["W8 kilit","16:30"],["W9 kilit","17:00"],["W10 kilit","17:30"],["ZIP","18:00"],["Sunum","18:30"]];
+const S = {scen:"base", sel:"W7_yalin", metric:"rec", votes:{}, me:null, chat:[], db:null, user:null, profiles:{}};
+const $ = id => document.getElementById(id);
+const css = v => getComputedStyle(document.documentElement).getPropertyValue(v).trim();
+const el = (tag, attrs={}, ...kids) => { const e=document.createElement(tag); for (const [k,v] of Object.entries(attrs)) { if (k==="class") e.className=v; else if (k==="text") e.textContent=v; else e.setAttribute(k,v); } for (const k of kids) if (k!=null) e.append(k); return e; };
+
+function istNow(){ const p = new Intl.DateTimeFormat("en-GB",{timeZone:"Europe/Istanbul",hour:"2-digit",minute:"2-digit",second:"2-digit",hour12:false}).formatToParts(new Date()); const g=t=>+p.find(x=>x.type===t).value; return g("hour")*3600+g("minute")*60+g("second"); }
+function renderDeadlines(){
+  const box=$("deadlines"); box.textContent=""; const now=istNow(); let nextSet=false;
+  for (const [label,t] of DEADLINES){ const [h,m]=t.split(":").map(Number); const left=h*3600+m*60-now;
+    const s=el("span",{class:"slot"}); if (left<0) s.classList.add("past");
+    else if (!nextSet){ s.classList.add("next"); nextSet=true; const hh=Math.floor(left/3600), mm=Math.floor(left%3600/60);
+      s.textContent=`${label} ${t} · ${hh?hh+"s ":""}${mm}dk kaldı`; box.append(s); continue; }
+    s.textContent=`${label} ${t}`; box.append(s); }
+}
+
+function runs(pkg){ return (DATA.runs[S.scen]||{})[pkg]||[]; }
+function rangeOf(rs, f){ const v=rs.map(f); return [Math.min(...v), Math.max(...v)]; }
+function fmtR([a,b], d=0, suf=""){ return Math.round(a*10**d)===Math.round(b*10**d) ? a.toFixed(d)+suf : `${a.toFixed(d)}–${b.toFixed(d)}${suf}`; }
+function mean(a){ return a.reduce((x,y)=>x+y,0)/a.length; }
+
+function renderScen(){
+  const seg=$("scen"); seg.textContent="";
+  for (const [k,label] of [["base","Temel"],["severe","Ağır grev"]]){
+    const b=el("button",{type:"button","aria-pressed":String(S.scen===k),text:label}); b.onclick=()=>{S.scen=k; renderAll();}; seg.append(b); }
+  $("scenNote").textContent = DATA.scenarios[S.scen] + (S.scen==="severe" ? " · Bu senaryoda yalnızca 4 seçenek koşuldu: karar yok, W7 Kalkan, W7 Yalın, W7 Yalnız yedek ekip." : "");
+}
+
+function renderRows(){
+  const tb=$("rows"); tb.textContent="";
+  const base=runs("nodecision"); const b4=base.length?mean(base.map(r=>r.goals.goal_4)):null;
+  for (const pkg of PK_ORDER){ const rs=runs(pkg); if(!rs.length) continue; const P=DATA.packages[pkg];
+    const tr=el("tr",{tabindex:"0"}); if(pkg===S.sel) tr.classList.add("sel");
+    tr.onclick=()=>{S.sel=pkg; renderAll();}; tr.onkeydown=e=>{ if(e.key==="Enter"){S.sel=pkg; renderAll();} };
+    const wk=decWeek(pkg);
+    const name=el("td",{},el("div",{class:"pk"},el("span",{class:"dot",style:`background:var(${COLORS[pkg]})`}), wk?el("span",{class:"wk",text:"W"+wk}):null, P.label),
+      el("div",{class:"blurb",text: pkg==="nodecision" ? P.blurb : decActs(pkg)}));
+    const g4=rangeOf(rs,r=>r.goals.goal_4); const d4 = b4!=null && pkg!=="nodecision" ? mean(rs.map(r=>r.goals.goal_4))-b4 : null;
+    const g4td=el("td",{class:"num"}, fmtR(g4,0,"%"));
+    if(d4!=null){ g4td.append(el("span",{class:"delta "+(d4>0.5?"up":d4<-0.5?"down":"flat"),text:(d4>0?"+":"")+d4.toFixed(1)+" puan"})); }
+    const bar=el("div",{class:"range"}); const lo=80, hi=100; const i=el("i"); i.style.left=Math.max(0,(g4[0]-lo)/(hi-lo)*100)+"%"; i.style.width=Math.max(3,(g4[1]-g4[0])/(hi-lo)*100)+"%"; bar.append(i); g4td.append(bar);
+    const pool=rs[0].g2pool; const g2=mean(rs.map(r=>r.goals.goal_2));
+    const g2td=el("td",{class:"num"}, `${g2.toFixed(0)}%`, el("div",{class:"ci",text:`${pool.k}/${pool.n} uçuş · GA ${pool.ci[0]}–${pool.ci[1]}`}));
+    const other=rangeOf(rs,r=>r.mix["moved to another airline"]);
+    const moved=new Set(rs.flatMap(r=>r.moved));
+    const vote=el("td"); const btn=el("button",{class:"votebtn",type:"button"}); const voters=Object.entries(S.votes).filter(([,v])=>v.package===pkg).map(([id])=>id);
+    btn.textContent = S.votes[S.me]?.package===pkg ? "Oyun ✓" : "Oy ver"; if (S.votes[S.me]?.package===pkg) btn.classList.add("mine");
+    btn.disabled = !S.db || !S.me; btn.onclick = e => { e.stopPropagation(); castVote(pkg); };
+    const faces=el("div",{class:"faces"}); for (const id of voters){ const p=S.profiles[id]; const img=el("img",{alt:"",src:p?.avatarUrl||""}); img.title=p?.name||"Biri"; faces.append(img); }
+    vote.append(btn, el("div",{class:"ci",text:voters.length? voters.length+" oy":""}), faces);
+    tr.append(name, el("td",{class:"num",text:"$"+rs[0].cost.toFixed(2)+"M"}), el("td",{class:"num",text:fmtR(rangeOf(rs,r=>r.goals.goal_1),1,"%")}),
+      g2td, el("td",{class:"num",text:fmtR(rangeOf(rs,r=>r.goals.goal_3),0).replace(/(^|–)(\d)/g,"$1+$2")}),
+      el("td",{class:"num",text:fmtR(rangeOf(rs,r=>r.goals.goal_3b),1)}), g4td, el("td",{class:"num",text:fmtR(other,0,"%")}),
+      el("td",{class:"num",text:String(moved.size)}), vote);
+    tb.append(tr); }
+}
+
+const METRICS = {rec:["Tavsiye (0–10)",w=>w.rec], other:["Başka havayolu %",w=>w.other], complaint:["Şikâyet eden %",w=>w.complaint]};
+function renderMetricSeg(){ const seg=$("metricSeg"); seg.textContent=""; for (const [k,[label]] of Object.entries(METRICS)){ const b=el("button",{type:"button","aria-pressed":String(S.metric===k),text:label}); b.onclick=()=>{S.metric=k; renderChart();}; seg.append(b);} }
+function renderChart(){
+  renderMetricSeg();
+  const svg=$("chart"); svg.textContent=""; const NS="http://www.w3.org/2000/svg"; const mk=(t,a)=>{const e=document.createElementNS(NS,t); for(const[k,v] of Object.entries(a)) e.setAttribute(k,v); return e;};
+  const W=640,H=280,L=44,R=12,T=14,B=34; const f=METRICS[S.metric][1];
+  const series=PK_ORDER.filter(p=>runs(p).length).map(p=>({p, ys:[...Array(10)].map((_,i)=>mean(runs(p).map(r=>f(r.weeks[i]))))}));
+  const all=series.flatMap(s=>s.ys); let lo=Math.min(...all), hi=Math.max(...all); const pad=(hi-lo)*.15||1; lo=Math.max(0,lo-pad); hi=hi+pad;
+  const x=i=>L+(W-L-R)*i/9, y=v=>T+(H-T-B)*(1-(v-lo)/(hi-lo));
+  svg.append(mk("rect",{x:x(6.5),y:T,width:x(7.5)-x(6.5),height:H-T-B,fill:css("--amber-soft")}));
+  const lbl=mk("text",{x:x(7),y:T+12,"text-anchor":"middle"}); lbl.textContent="grev"; svg.append(lbl);
+  for (let k=0;k<=4;k++){ const v=lo+(hi-lo)*k/4; svg.append(mk("line",{x1:L,x2:W-R,y1:y(v),y2:y(v),stroke:css("--line"),"stroke-width":1}));
+    const t=mk("text",{x:L-6,y:y(v)+4,"text-anchor":"end"}); t.textContent=v.toFixed(S.metric==="rec"?1:0); svg.append(t); }
+  for (let i=0;i<10;i++){ const t=mk("text",{x:x(i),y:H-12,"text-anchor":"middle"}); t.textContent="W"+(i+1); svg.append(t); }
+  for (const s of series){ const c=css(COLORS[s.p]); const sel=s.p===S.sel;
+    svg.append(mk("polyline",{points:s.ys.map((v,i)=>x(i)+","+y(v)).join(" "),fill:"none",stroke:c,"stroke-width":sel?3:1.5,opacity:sel?1:.55}));
+    const lx=x(9), ly=y(s.ys[9]); svg.append(mk("circle",{cx:lx,cy:ly,r:sel?4:2.5,fill:c}));
+    const dw=decWeek(s.p); if (dw){ const dx=x(dw-1), dy=y(s.ys[dw-1]); svg.append(mk("rect",{x:dx-4,y:dy-4,width:8,height:8,fill:c,transform:`rotate(45 ${dx} ${dy})`,opacity:sel?1:.6})); } }
+  const lg=$("legend"); lg.textContent=""; const dec=S.metric==="rec"?1:0;
+  for (const s of series){ lg.append(el("span",{},el("span",{class:"dot",style:`background:var(${COLORS[s.p]})`}),`${DATA.packages[s.p].label} → W10: ${s.ys[9].toFixed(dec)}${S.metric==="rec"?"":"%"}`)); }
+  lg.append(el("span",{class:"note",text:"◆ kararın devreye girdiği hafta"}));
+}
+
+function renderDetail(){
+  const box=$("detail"); box.textContent=""; const P=DATA.packages[S.sel]; const rs=runs(S.sel);
+  box.append(el("div",{class:"eyebrow",text:"Seçili paket"}), el("h3",{text:P.label}), el("div",{class:"note",text:P.blurb}));
+  if (rs.length){ const moved=[...new Set(rs.flatMap(r=>r.moved))].map(id=>DATA.people[id]?.name||id);
+    box.append(el("div",{class:"note",text: moved.length? "Uçuşunu ücretsiz kaydıranlar: "+moved.join(", ") : "Bu pakette kimse uçuşunu öne/arkaya kaydırmadı."})); }
+  if (!P.decisions.length){ box.append(el("div",{class:"empty",text:"Bu senaryoda karar yok: Kestrel olağan politikasıyla devam ediyor."})); return; }
+  P.decisions.forEach((d,i)=>{ const dl=el("dl",{class:"kv"});
+    const add=(k,v)=>{dl.append(el("dt",{text:k}), el("dd",{text:v}));};
+    add("Hafta", `W${d.week}`); add("Hedef", d.target); add("Aksiyonlar", d.actions.map(a=>a.action+(a.level!=="on"?` (${a.level})`:"")).join(" · ")); add("Kanallar", d.channels.join(", "));
+    const msg=el("div",{class:"msg",text:d.message}); const why=el("div",{class:"msg",text:d.why});
+    const cp=el("button",{class:"copy",type:"button",text:`Karar ${i+1} mesajını kopyala (${d.message.length}/600)`});
+    cp.onclick=async()=>{ try{ await navigator.clipboard.writeText(d.message); cp.textContent="Kopyalandı"; }catch{ const r=document.createRange(); r.selectNodeContents(msg); const s=getSelection(); s.removeAllRanges(); s.addRange(r); cp.textContent="Metin seçildi; Cmd/Ctrl+C ile kopyalayın"; } };
+    box.append(el("div",{class:"dec"}, el("h3",{text:`Karar ${i+1}`}), dl, el("div",{class:"eyebrow",text:"Müşteriye gidecek mesaj"}), msg, cp, el("div",{class:"eyebrow",text:"Neden (3 satır)"}), why)); });
+}
+
+function initFilters(){
+  const fp=$("fPkg"), tag=$("chatTag");
+  for (const p of PK_ORDER){ fp.append(el("option",{value:p,text:DATA.packages[p].label})); tag.append(el("option",{value:p,text:DATA.packages[p].label})); }
+  const fw=$("fWeek"); fw.append(el("option",{value:"",text:"tümü"})); for (let w=1;w<=10;w++) fw.append(el("option",{value:String(w),text:"W"+w}));
+  for (const id of ["fPkg","fSeed","fWeek","fPub","fQ"]) $(id).addEventListener("input", renderFeed);
+}
+function avatarColor(group){ return {vacationers:"--c2","families visiting relatives":"--c3",students:"--c5","business travelers":"--c6","travel agencies":"--c4"}[group]||"--c1"; }
+const STATUS_TR={"flies as planned":["planlandığı gibi",""],"rebooked":["yeniden rezerve","warn"],"moved to another airline":["başka havayolu","bad"],"canceled the trip":["seyahati iptal","bad"]};
+function renderFeed(){
+  const pkg=$("fPkg").value||S.sel, seed=+$("fSeed").value, wk=$("fWeek").value, pub=$("fPub").checked, q=$("fQ").value.trim().toLowerCase();
+  const run=runs(pkg).find(r=>r.seed===seed) || runs(pkg)[0]; const feed=$("feed"); feed.textContent="";
+  if (!run){ feed.append(el("div",{class:"empty",text:"Bu senaryoda bu paket koşulmadı."})); $("talkCount").textContent=""; return; }
+  const items=run.talk.filter(t=>(!wk||t.w===+wk)&&(!pub||t.pub)&&(!q||(t.t+" "+(DATA.people[t.p]?.name||"")).toLowerCase().includes(q)));
+  $("talkCount").textContent=`${items.length} mesaj`;
+  if (!items.length){ feed.append(el("div",{class:"empty",text:"Bu filtrelerle mesaj yok."})); return; }
+  for (const t of items.slice(0,300)){ const p=DATA.people[t.p]||{name:t.p,group:"",circle:[]};
+    const av=el("div",{class:"av",text:p.name.split(" ").map(s=>s[0]).join("").slice(0,2)}); av.style.background=`var(${avatarColor(p.group)})`;
+    const [st,cls]=STATUS_TR[t.st]||[t.st,""];
+    const meta=el("div",{class:"meta",text:`${p.group} · ${p.home||""} · W${t.w} · tavsiye ${t.rec}/10`});
+    const chips=el("div",{class:"board"}, el("span",{class:"chip "+cls,text:st}), ...t.fl.map(f=>el("span",{class:"chip "+(f.startsWith("İPTAL")?"bad":f.includes("rötar")?"warn":"good"),text:f})));
+    const reach=el("div",{class:"reach",text: (t.where ? `Nereye: ${t.where} · ` : "") + (t.pub ? "Herkese açık paylaşım: sosyal medyayı takip edenlere ulaştı." : (p.circle?.length ? "Ulaştığı kişiler: "+p.circle.map(c=>DATA.people[c]?.name||c).join(", ") : "Yakın çevresine söyledi."))});
+    feed.append(el("div",{class:"post"}, av, el("div",{}, el("div",{class:"who",text:p.name}), meta, el("p",{text:t.t}), el("div",{class:"meta",text:"Hissettiği: "+t.feel}), chips, reach))); }
+}
+
+// ---------------- shared state: votes + team chat ----------------
+async function castVote(pkg){
+  if (!S.db || !S.me) return;
+  const ref=S.db.doc("votes/"+S.me);
+  try { if (S.votes[S.me]?.package===pkg) await ref.delete(); else await ref.set({package:pkg, at:Date.now()}); }
+  catch(e){ $("chatState").textContent = e?.code==="invalid_argument" ? "Oy kaydedilemedi: bu sayfada yazma izniniz yok." : "Oy kaydedilemedi, tekrar deneyin."; }
+}
+async function resolveProfiles(ids){ if(!S.user||!ids.length) return; try{ Object.assign(S.profiles, await S.user.profiles([...new Set(ids)])); }catch{} }
+function renderChat(){
+  const box=$("chat"); box.textContent="";
+  const msgs=S.chat.slice().sort((a,b)=>a.at-b.at);
+  if (!msgs.length){ box.append(el("div",{class:"empty",text:"Henüz mesaj yok. İlk mesajı aşağıdan yazın; seçtiğiniz paketi etiketleyebilirsiniz."})); return; }
+  for (const m of msgs){ const p=S.profiles[m.by];
+    const when=new Date(m.at).toLocaleTimeString("tr-TR",{hour:"2-digit",minute:"2-digit",timeZone:"Europe/Istanbul"});
+    const meta=el("div",{class:"meta",text:`${(p&&p.name)||"Biri"}${m.by===S.me?" (sen)":""} · ${when}`});
+    if (m.tag && DATA.packages[m.tag]) meta.append(" · ", el("span",{class:"chip",text:DATA.packages[m.tag].label}));
+    box.append(el("div",{class:"cm"}, el("img",{alt:"",src:p?.avatarUrl||""}), el("div",{}, meta, el("p",{text:m.text})))); }
+  box.scrollTop=box.scrollHeight;
+}
+let myChat=[];
+async function connect(){
+  const [db,user]=await Promise.all([claude.use("db"), claude.use("user")]);
+  S.user=user; if (!db){ $("chatState").textContent="Paylaşılan oylar ve sohbet bu görünümde kullanılamıyor."; renderRows(); return; }
+  S.db=db; S.me = user ? await user.id() : null;
+  $("chatState").textContent = S.me ? "Canlı" : "Giriş yapmadan yalnızca okuyabilirsiniz.";
+  $("sendBtn").disabled = !S.me;
+  db.collection("votes").onSnapshot(async snap=>{ S.votes={}; for (const d of snap.docs){ const v=d.data(); if (v&&typeof v.package==="string") S.votes[d.id]=v; }
+    await resolveProfiles(Object.keys(S.votes)); renderRows(); }, ()=>{ $("chatState").textContent="Oylar yüklenemedi."; });
+  db.collection("chat").onSnapshot(async snap=>{ const all=[];
+    for (const d of snap.docs){ const v=d.data(); if (!v||!Array.isArray(v.messages)) continue; if (d.id===S.me) myChat=v.messages.slice();
+      for (const m of v.messages) if (m && typeof m.text==="string") all.push({text:m.text.slice(0,1000), at:+m.at||0, tag:m.tag||"", by:d.id}); }
+    S.chat=all; await resolveProfiles(all.map(m=>m.by)); renderChat(); }, ()=>{ $("chatState").textContent="Sohbet yüklenemedi."; });
+  renderRows();
+}
+$("composer").addEventListener("submit", async e=>{
+  e.preventDefault(); const text=$("chatText").value.trim(); if(!text||!S.db||!S.me) return;
+  const btn=$("sendBtn"); btn.disabled=true;
+  const next=[...myChat, {text, at:Date.now(), tag:$("chatTag").value}].slice(-200);
+  try{ await S.db.doc("chat/"+S.me).set({messages:next}); myChat=next; $("chatText").value=""; }
+  catch(err){ $("chatState").textContent = err?.code==="invalid_argument" ? "Mesaj gönderilemedi: bu sayfada yazma izniniz yok." : "Mesaj gönderilemedi, tekrar deneyin."; }
+  finally{ btn.disabled=false; }
+});
+
+const BAR_METRICS = [
+  ["G4 gelir (W5–10, plana göre %)", r=>r.goals.goal_4, 80, 100, true, "%"],
+  ["Başka havayoluna geçen (%)", r=>r.mix["moved to another airline"], 0, 20, false, "%"],
+  ["Şikâyet endeksi", r=>r.goals.goal_3b, 0, 10, false, ""],
+  ["G3 NPS (+12 bazından)", r=>r.goals.goal_3, -20, 40, true, ""],
+  ["G2 24 saatte rebook/iade (%)", r=>r.goals.goal_2, 0, 100, true, "%"],
+];
+function renderBars(){
+  const box=$("bars"); box.textContent=""; const base=runs("nodecision");
+  for (const [title,f,lo,hi,higherBetter,suf] of BAR_METRICS){
+    const card=el("div",{class:"bar-card"}, el("h3",{text:title}), el("div",{class:"note",text: higherBetter?"yüksek iyi":"düşük iyi"}));
+    const b0 = base.length ? mean(base.map(f)) : null;
+    for (const pkg of PK_ORDER){ const rs=runs(pkg); if(!rs.length) continue; const v=mean(rs.map(f));
+      const row=el("div",{class:"bar-row"+(pkg===S.sel?" sel":"")}); row.title=DATA.packages[pkg].label+(decActs(pkg)?": "+decActs(pkg):"");
+      const tr=el("div",{class:"track"}); const fill=el("i"); fill.style.width=Math.max(1,Math.min(100,(v-lo)/(hi-lo)*100))+"%"; fill.style.background=`var(${COLORS[pkg]})`; tr.append(fill);
+      if (b0!=null){ const m=el("b"); m.style.left=Math.max(0,Math.min(100,(b0-lo)/(hi-lo)*100))+"%"; tr.append(m); }
+      let delta=""; if (b0!=null && pkg!=="nodecision"){ const d=v-b0; delta=` (${d>=0?"+":""}${d.toFixed(1)})`; }
+      const val=el("div",{class:"val",text:v.toFixed(suf==="%"?0:1)+suf});
+      if (delta){ const good=(v-b0)*(higherBetter?1:-1); val.append(el("span",{class:"d "+(good>0.5?"up":good<-0.5?"down":"flat"),text:delta})); }
+      row.append(el("div",{class:"lab",text:DATA.packages[pkg].label}), tr, val); row.onclick=()=>{S.sel=pkg; renderAll();}; card.append(row); }
+    box.append(card); }
+}
+function renderSurvey(){
+  const Q=DATA.questions, keys=Object.keys(Q); const head=$("svHead"), body=$("svBody"); head.textContent=""; body.textContent="";
+  const hr=el("tr",{},el("th",{text:"Karar"})); for (const k of keys) hr.append(el("th",{text:`${k} ${Q[k].label}${Q[k].reversed?" ⇅":""}`, title:Q[k].text})); hr.append(el("th",{text:"Genel (yön düzeltilmiş)"})); head.append(hr);
+  const pos=(k,v)=>Q[k].reversed?6-v:v;
+  for (const pkg of PK_ORDER){ const rs=runs(pkg).filter(r=>r.probe&&Object.keys(r.probe).length); if(!rs.length) continue;
+    const tr=el("tr",{class:pkg===S.sel?"sel":""}); tr.onclick=()=>{S.sel=pkg; renderAll();};
+    tr.append(el("td",{},el("div",{class:"pk"},el("span",{class:"dot",style:`background:var(${COLORS[pkg]})`}), decWeek(pkg)?el("span",{class:"wk",text:"W"+decWeek(pkg)}):null, DATA.packages[pkg].label)));
+    let ps=0, pe=0;
+    for (const k of keys){ const s=mean(rs.map(r=>r.probe[k][0])), e=mean(rs.map(r=>r.probe[k][1])); ps+=pos(k,s); pe+=pos(k,e);
+      const good=(pos(k,e)-pos(k,s)); const td=el("td",{class:"cell num"}, e.toFixed(2), el("span",{class:"d "+(good>0.05?"up":good<-0.05?"down":"flat"),text:`${e-s>=0?"+":""}${(e-s).toFixed(2)}`})); tr.append(td); }
+    const g=(pe-ps)/keys.length; tr.append(el("td",{class:"cell num"}, (pe/keys.length).toFixed(2), el("span",{class:"d "+(g>0.05?"up":g<-0.05?"down":"flat"),text:`${g>=0?"+":""}${g.toFixed(2)}`})));
+    body.append(tr); }
+}
+const READ_TR={mild:"Hafif okuma",medium:"Orta okuma",severe:"Ağır okuma"};
+const GOAL_TR={goal_1:"G1",goal_3:"G3 NPS",goal_3b:"Şikâyet",goal_4:"G4"};
+function renderCrisisDecisions(){
+  const list=DATA.crisis_decisions||[]; $("crisisDecSection").hidden=!list.length; const box=$("crisisDec"); box.textContent="";
+  $("lockedNote").textContent = (DATA.locked||[]).length ? `Kilitli: ${(DATA.locked).map(d=>"W"+d.week+" "+d.actions.map(a=>a.action.split(" ").slice(0,3).join(" ")).join(" + ")).join(" · ")}` : "Henüz kilitli karar yok: adaylar tek başına test edildi.";
+  for (const sm of list){
+    const cname=c=> c==="baseline" ? ((sm.locked||[]).length?"Yalnızca kilitli karar":"Ek karar yok") : (sm.candidates.find(x=>x.code===c)?.label||c);
+    const rec=sm.candidates.find(x=>x.code===sm.recommended);
+    const head=el("div",{class:"cd-rec"}, el("div",{class:"eyebrow",text:`W${sm.week} için karar · ${sm.title}`}),
+      el("h3",{text: rec ? `Önerilen: ${rec.label} ($${rec.cost.toFixed(2)}M)` : "Öneri yok"}),
+      el("div",{class:"note",text:"Kural: yalnızca modelin simüle ettiği aksiyonlar; sonra en kötü okumada en çok board hedefini geçen; eşitlikte en kötü okumada daha yüksek gelir, sonra daha düşük maliyet."}));
+    if (rec?.not_modeled?.length) head.append(el("div",{class:"note",text:"Uyarı: modelde etkisiz aksiyon içeriyor: "+rec.not_modeled.join(", ")}));
+    box.append(head);
+    const rs=Object.keys(sm.readings);
+    const tb=el("div",{class:"tablebox"}); const tbl=el("table"); const th=el("tr",{},el("th",{text:"Seçenek"}),el("th",{text:"Maliyet"}));
+    for (const r of rs) th.append(el("th",{text:READ_TR[r]||r, title:sm.readings[r].reading})); tbl.append(el("thead",{},th));
+    const body=el("tbody");
+    for (const c of sm.order){ const cand=sm.candidates.find(x=>x.code===c);
+      const tr=el("tr",{class:c===sm.recommended?"sel":""}); tr.append(el("td",{},el("div",{class:"pk",text:cname(c)}), el("div",{class:"blurb",text: cand ? cand.decision.actions.map(a=>a.action+(a.level!=="on"?` (${a.level})`:"")).join(" + ") : ""})), el("td",{class:"num",text: cand?`$${cand.cost.toFixed(2)}M`:"$0"}));
+      for (const r of rs){ const x=sm.table[c]?.[r]; if(!x){ tr.append(el("td",{text:"–"})); continue; }
+        const v=x.vs_baseline; const dv=(k,suf="")=> v&&c!=="baseline" ? ` (${v[k]>=0?"+":""}${v[k].toFixed(1)}${suf})` : "";
+        const bd=el("div",{class:"badges"}); for (const [k,ok] of Object.entries(x.pass)) bd.append(el("span",{class:"badge "+(ok?"ok":"no"),text:(ok?"✓ ":"✗ ")+GOAL_TR[k]}));
+        tr.append(el("td",{},el("div",{class:"cell3"}, el("span",{class:"g",text:`Gelir ${x.goal_4.toFixed(1)}%${dv("goal_4")}`}), el("span",{class:"g",text:`NPS ${x.goal_3>=0?"+":""}${x.goal_3.toFixed(0)}${dv("goal_3")}`}),
+          el("span",{class:"g",text:`Başka havayolu ${x.other.toFixed(0)}%${dv("other")}`}), el("span",{class:"g",text:`G2 ${x.goal_2.toFixed(0)}% · kaydıran ${x.moved}`}), bd))); }
+      body.append(tr); }
+    tbl.append(body); tb.append(tbl); box.append(tb);
+    box.append(el("div",{class:"caveat",text:"Okumalar: "+rs.map(r=>`${READ_TR[r]||r}: ${sm.readings[r].reading}`).join("  ·  ")}));
+    for (const cand of sm.candidates){ const d=cand.decision; const det=el("details",{class:"cand"}, el("summary",{text:`${cand.label} · W${d.week} · $${cand.cost.toFixed(2)}M`}));
+      const dl=el("dl",{class:"kv"}); const add=(k,v)=>{dl.append(el("dt",{text:k}), el("dd",{text:v}));};
+      add("Hedef", d.target); add("Aksiyonlar", d.actions.map(a=>a.action+(a.level!=="on"?` (${a.level})`:"")).join(" · ")); add("Kanallar", d.channels.join(", "));
+      const msg=el("div",{class:"msg",text:d.message}); const cp=el("button",{class:"copy",type:"button",text:`Mesajı kopyala (${d.message.length}/600)`});
+      cp.onclick=async()=>{ try{ await navigator.clipboard.writeText(d.message); cp.textContent="Kopyalandı"; }catch{ const rg=document.createRange(); rg.selectNodeContents(msg); const sl=getSelection(); sl.removeAllRanges(); sl.addRange(rg); cp.textContent="Metin seçildi; Cmd/Ctrl+C ile kopyalayın"; } };
+      det.append(dl, msg, cp, el("div",{class:"msg",text:d.why})); box.append(det); }
+  }
+}
+function renderCrises(){
+  const box=$("crises"); box.textContent="";
+  $("updated").textContent = `Deneyler ${DATA.updated} itibarıyla · ${DATA.crises.length} kriz`;
+  for (const c of DATA.crises){
+    const card=el("div",{class:"crisis"+(c.kind==="surprise"?" surprise":"")},
+      el("div",{class:"board"}, el("span",{class:"chip "+(c.kind==="surprise"?"bad":"warn"),text:c.kind==="surprise"?"sürpriz":"bilinen"}), el("span",{class:"chip",text:"W"+c.week+" duyuru"})),
+      el("h3",{text:c.title}), el("p",{class:"muted",text:c.text}), el("p",{text:"Okumamız: "+c.reading}));
+    for (const e of c.effects) card.append(el("span",{class:"chip",text:e}));
+    if (!c.effects.length) card.append(el("span",{class:"chip",text:"operasyon etkisi yok; yalnızca haberlerde"}));
+    for (const u of c.updates) card.append(el("p",{class:"muted",text:`W${u.week} güncelleme: ${u.text}`}));
+    box.append(card); }
+}
+function renderAll(){ renderScen(); renderRows(); renderChart(); renderDetail(); renderBars(); renderSurvey(); if(!$("fPkg").dataset.touched){ $("fPkg").value=S.sel; } renderFeed(); }
+initFilters(); $("fPkg").addEventListener("change",()=>{$("fPkg").dataset.touched="1";});
+renderDeadlines(); setInterval(renderDeadlines, 30000);
+renderCrises();
+renderCrisisDecisions();
+renderAll();
+connect();
+</script>

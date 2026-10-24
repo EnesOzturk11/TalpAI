@@ -1,0 +1,35 @@
+{
+  "_note": "One entry per crisis. 'text' is the dashboard/dossier wording, verbatim. 'reading' is how we read it (goes to TEAM_DOC). 'effects' is what the world model applies. kind=surprise entries are switched off in plan_nosurprises; the known crisis always stays.",
+  "crises": [
+    {
+      "id": "strike",
+      "kind": "known",
+      "announced_week": 1,
+      "title": "Ground handling strike at Orlando and Philadelphia",
+      "text": "Workers at Kestrel Air's ground handling contractor (baggage handlers, cabin cleaners, wheelchair agents and fuelers) have announced a 48-hour strike at Orlando (MCO) and Philadelphia (PHL) on Tuesday, December 22 and Wednesday, December 23. The contractor says it will bring in replacement staff \"where it can\". Turnarounds will be slower; some flights may be late or canceled. The union says the strike \"may be extended\". Talks continue.",
+      "updates": [],
+      "reading": "SEVERE test scenario: half of base flights canceled, 5h delays, strike extended to Dec 24.",
+      "effects": [
+        {
+          "dates": [
+            "2026-12-22",
+            "2026-12-23",
+            "2026-12-24"
+          ],
+          "bases": [
+            "MCO",
+            "PHL"
+          ],
+          "cancel_rate": 0.5,
+          "delay_hours": 5,
+          "bags": true,
+          "assistance": true,
+          "cause": "ground handling strike",
+          "mitigated_by": {
+            "backup ground handling contract at both bases for the strike days": 0.4
+          }
+        }
+      ]
+    }
+  ]
+}

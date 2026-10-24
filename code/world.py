@@ -62,14 +62,14 @@ def load_decisions(path):
         for a in d["actions"]:
             item = MENU[norm_action(a["action"])]
             total += item["levels"][a["level"]]
-    assert len(decs) in (0, 2), "exactly two decisions (or none)"
+    assert len(decs) <= 2, "at most two decisions (hand-in runs need exactly two; check.py enforces it)"
     budget = BUDGET_M + sum(0.25 for d in decs for a in d["actions"] if norm_action(a["action"]).startswith("merge"))
     assert total <= budget + 1e-9, f"decisions cost ${total:.2f}M, budget ${budget:.2f}M"
     return decs, round(total, 2)
 
 
-def load_crises(surprises=True):
-    cs = json.loads((ROOT / "config" / "crises.json").read_text())["crises"]
+def load_crises(surprises=True, path=None):
+    cs = json.loads(Path(path or ROOT / "config" / "crises.json").read_text())["crises"]
     return [c for c in cs if surprises or c["kind"] == "known"]
 
 
@@ -114,6 +114,15 @@ class World:
             return any((o := self.leg_outcome.get((pid, k))) and o["disrupted"] and t["week"] == 8 for k, t in legs)
         if rule == "upcoming_travelers":
             return any(t["week"] >= week for _, t in legs)
+        if rule.startswith(("crisis_exposed:", "crisis_affected:")):  # legs on a given crisis's dates and airports
+            kind, cid = rule.split(":", 1)
+            effects = [e for c in self.crises if c["id"] == cid for e in c["effects"]]
+            def hit(t):
+                return any(t["date"] in e["dates"] and (e["bases"] == "all" or {t["from"], t["to"]} & set(e["bases"]))
+                           for e in effects)
+            if kind == "crisis_exposed":
+                return any(hit(t) for _, t in legs)
+            return any(hit(t) and (o := self.leg_outcome.get((pid, k))) and o["disrupted"] for k, t in legs)
         raise ValueError(f"unknown target_rule {rule}")
 
     def messages_for(self, pid, week):
@@ -145,6 +154,8 @@ class World:
             elif c["announced_week"] < week and any(
                     date.fromisoformat(d) >= week_start(week) for e in c["effects"] for d in e["dates"]):
                 items.append(f"Still expected: {c['title']}.")
+            elif not c["effects"] and c["announced_week"] == week - 1:
+                items.append(f"Still in the news: {c['title']}.")
             for u in c.get("updates", []):
                 if u["week"] == week:
                     items.append(f"UPDATE on {c['title']}: {u['text']}")

@@ -313,7 +313,7 @@ PERSONAS = [
       "Gloria hasn't flown abroad since her husband died; her sister talked her into a week in Montego Bay in January. "
       "She hears news through a busy family WhatsApp group where rumors travel faster than facts, and she'll believe the "
       "strike is 'still going' if a cousin says so.",
-      "Gentle and chatty, mixes in Spanish phrases, worries out loud.",
+      "Gentle and chatty, warm with family, worries out loud.",
       ["F06", "A02"]),
 
     P("V08", "vacationers", "Alex Novak",
@@ -401,7 +401,7 @@ PERSONAS = [
       "Carmen worked extra shifts since September so her kids could spend Christmas with their grandmother in Bayamon. "
       "She checks two bags of gifts, doesn't know she's owed cash if the flight is canceled, and would be too embarrassed "
       "to argue at the counter; she'd cry in the car instead and tell the family group chat.",
-      "Polite and worried; long, voice-note-style messages that switch between English and Spanish.",
+      "Polite and worried; long, voice-note-style messages full of family details.",
       ["F06", "A02", "F08", "A06"]),
 
     P("F02", "families visiting relatives", "Walter Greene",
@@ -706,7 +706,7 @@ PERSONAS = [
       "Sofia is the first in her family to go to college and the first to fly alone; her parents saved for this ticket. "
       "If her flight is canceled she won't call or argue; she'll sit at the gate, message her mother, and do whatever the "
       "first official-looking person tells her.",
-      "Soft-spoken, careful English, apologizes a lot; switches to Spanish with family.",
+      "Soft-spoken, careful English, apologizes a lot; very close to her mother.",
       ["S01", "V08"]),
 
     P("S04", "students", "Ethan Brooks",

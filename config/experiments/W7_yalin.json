@@ -1,0 +1,28 @@
+{
+  "_label": "W7 · Yalın",
+  "_blurb": "Partner + ücretsiz değişiklik, yedek sözleşme yok",
+  "decisions": [
+    {
+      "week": 7,
+      "target": "Passengers booked on Kestrel flights to or from Orlando or Philadelphia between December 21 and December 27",
+      "target_rule": "week8_base",
+      "actions": [
+        {
+          "action": "Rebooking deal with a partner airline for 2 disrupted weeks",
+          "level": "on"
+        },
+        {
+          "action": "Free changes and cancellations for bookings in a 2-week window",
+          "level": "on"
+        }
+      ],
+      "message": "Kestrel Air: a 48-hour ground handling strike is planned at Orlando and Philadelphia on Dec 22-23, and flights on those days may be late or canceled. If you can travel on another day, move your flight now for free in the app: Dec 21 and Dec 24 still have seats. If you keep your flight and it is canceled, we will rebook you on Kestrel or a partner airline, or refund you in full if you prefer.",
+      "channels": [
+        "app",
+        "email",
+        "text message"
+      ],
+      "why": "Own seats in week 8 are 97% booked, so moving people early and a partner airline are the cheapest protection.\nWe skip the backup contract and keep $2.5M in reserve for surprises.\nAn honest early warning is what passengers remember."
+    }
+  ]
+}

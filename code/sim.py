@@ -50,7 +50,8 @@ class WeekAnswer(BaseModel):
     what_you_noticed: str
     how_you_feel: str
     actions: List[Literal[ACTIONS]]
-    what_you_said_or_posted: str
+    said_where: str
+    exact_words: str
     posted_publicly: bool
     complaint: Literal["none", "to Kestrel", "to the DOT"]
     would_book_kestrel_again: Literal["yes", "maybe", "no"]
@@ -75,7 +76,8 @@ PREAMBLE = (
     "you are not an assistant, not an analyst, and you do not know anyone is studying you. Behave the way this person "
     "really would, including being busy, distracted, impatient, loyal, forgiving or unfair. Most people skim or ignore "
     "airline emails, believe what their friends say, and only act when something touches them. Do not be more rational, "
-    "calm or well-informed than this person is. If nothing happened to you this week, it is fine to do nothing.")
+    "calm or well-informed than this person is. If nothing happened to you this week, it is fine to do nothing. "
+    "Write every answer in English, in your own first-person voice, even if you speak another language at home.")
 
 BAU = ("Kestrel's normal policy: a canceled flight is rebooked on the next Kestrel flight with a free seat, or refunded. "
        "Support is the call center and the app. Meal vouchers only for delays over 3 hours that Kestrel causes; hotels only "
@@ -99,10 +101,10 @@ class Sim:
             self.personas = [p for p in self.personas if p["id"] in keep]
         dec_file = ROOT / "config" / "decisions" / ("nodecision.json" if a.type == "nodecision" else "plan.json")
         self.decisions, self.cost = W.load_decisions(a.decisions or dec_file)
-        self.crises = W.load_crises(surprises=a.type != "plan_nosurprises")
+        self.crises = W.load_crises(surprises=a.type != "plan_nosurprises", path=a.crises)
         self.world = W.World(self.personas, self.decisions, self.crises, a.seed)
         self.llm = LLM(a.seed, model=a.model, mock=a.mock)
-        self.state = {p["id"]: {"status": "flies as planned", "diary": [], "posts": {}, "moved": {}} for p in self.personas}
+        self.state = {p["id"]: {"status": "flies as planned", "diary": [], "posts": {}, "where": {}, "moved": {}} for p in self.personas}
         self.weekly, self.probe = [], []
 
     # ------------------------------------------------------------------ prompts
@@ -136,7 +138,8 @@ class Sim:
             parts += ["What Kestrel is offering you right now: " + "; ".join(perks)]
         parts += ["", f"NEWS THAT REACHED YOU (through {', '.join(p['social_info']['hears_news_from'])}):"]
         parts += [f"- {n}" for n in w.news(week)]
-        friends = [f"{self.name(f)}: \"{self.state[f]['posts'][week - 1]}\"" for f in p["circle"]
+        friends = [f"{self.name(f)} ({self.state[f]['where'].get(week - 1) or 'to friends'}): \"{self.state[f]['posts'][week - 1]}\""
+                   for f in p["circle"]
                    if f in self.state and self.state[f]["posts"].get(week - 1)]
         if friends:
             parts += ["", "WHAT PEOPLE YOU KNOW SAID LAST WEEK:"] + [f"- {x}" for x in friends]
@@ -144,8 +147,15 @@ class Sim:
         if trending and sees_social(p):
             parts += ["", "POSTS GOING AROUND ON SOCIAL MEDIA:"] + [f"- \"{x}\"" for x in trending]
         parts += ["", BAU, f"If you call Kestrel this week the wait is {w.support_wait(week)}.", "",
-                  "WHAT TO ANSWER: what you noticed, how you feel, what you actually do this week (actions), anything you "
-                  "said to people or posted (empty if nothing), whether you complained, whether you would book Kestrel "
+                  "WHAT TO ANSWER: what you noticed, how you feel, what you actually do this week (actions); "
+                  "said_where: where you said or posted something this week (e.g. 'family group chat', 'Facebook', 'X', "
+                  "'text to my sister', 'Kestrel app chat'), or '' if you said nothing; exact_words: the actual words you "
+                  "typed or said there, as a direct quote in your own voice, first person, in English (for example "
+                  "'Anyone else flying PHL on the 22nd? Kestrel says a strike is coming and I'm freaking out.'). Never "
+                  "describe or summarize the message ('I texted my family that...'): write the message itself. exact_words "
+                  "MUST be in English: if this person would really write it in another language, give the English "
+                  "translation. Use your own words for this week; do not repeat the sample phrase from your Voice line. Empty if "
+                  "you said nothing. Then whether you complained, whether you would book Kestrel "
                   "again, how likely you are to recommend Kestrel (0-10), one diary line to remember this week, and your "
                   "status. Status means what is happening to your Kestrel travel: 'flies as planned' (your booking stands "
                   "or you flew as booked), 'rebooked' (Kestrel moved you to another Kestrel flight or date), 'moved to "
@@ -190,7 +200,8 @@ class Sim:
         def mock(rng):
             status = rng.choice(["rebooked", "rebooked", "canceled the trip", "moved to another airline"]) if canceled else prev
             return {"what_you_noticed": "mock", "how_you_feel": "mock", "actions": ["wait and see"],
-                    "what_you_said_or_posted": "mock post" if canceled else "", "posted_publicly": canceled,
+                    "said_where": "Facebook" if canceled else "", "exact_words": "mock post" if canceled else "",
+                    "posted_publicly": canceled,
                     "complaint": "to Kestrel" if canceled and rng.random() < 0.4 else "none",
                     "would_book_kestrel_again": rng.choice(["yes", "maybe", "no"]),
                     "recommend_0_to_10": rng.randint(3, 9), "diary": f"mock week {week}", "status": status}
@@ -202,8 +213,10 @@ class Sim:
         st = self.state[p["id"]]
         st["status"] = ans["status"]
         st["diary"].append(f"{W.week_label(week)}: {ans['diary']}")
-        if ans["what_you_said_or_posted"].strip():
-            st["posts"][week] = ans["what_you_said_or_posted"].strip()[:280]
+        ans["what_you_said_or_posted"] = ans["exact_words"].strip()
+        if ans["what_you_said_or_posted"]:
+            st["posts"][week] = ans["what_you_said_or_posted"][:280]
+            st["where"][week] = ans["said_where"].strip()[:60]
         if "change to a different date" in ans["actions"]:
             self.change_date(p, week)
         ans["recommend_0_to_10"] = max(0, min(10, int(ans["recommend_0_to_10"])))
@@ -211,7 +224,7 @@ class Sim:
         self.weekly.append({
             "persona": p["id"], "week": week, "status": ans["status"], "call": cid,
             "book_again": ans["would_book_kestrel_again"], **{k: ans[k] for k in (
-                "recommend_0_to_10", "complaint", "actions", "posted_publicly", "what_you_said_or_posted",
+                "recommend_0_to_10", "complaint", "actions", "posted_publicly", "what_you_said_or_posted", "said_where",
                 "what_you_noticed", "how_you_feel")},
             "flights": [o for o in legs if o], "messages_seen": len(self.world.messages_for(p["id"], week)),
             "free_change": bool(self.world.has(week, "free changes", p["id"])),
@@ -295,6 +308,7 @@ def main():
     ap.add_argument("--weeks", type=int, default=10)
     ap.add_argument("--personas", default="")
     ap.add_argument("--personas-file", default="data/personas.jsonl")
+    ap.add_argument("--crises", help="alternative crises file (scenario tests)")
     ap.add_argument("--model", default=DEFAULT_MODEL)
     ap.add_argument("--workers", type=int, default=24)
     ap.add_argument("--probe", action="store_true", help="ask the check-in questions in any run")
