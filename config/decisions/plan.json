@@ -1,0 +1,31 @@
+{
+  "_note": "PLACEHOLDER (package A from notes/roadmap.md) until the team locks the real decisions on the dashboard. 'target_rule' is ours: how the code picks the target (all | week8_base | strike_exposed | affected | upcoming_travelers); it is kept out of run.json's decisions.",
+  "decisions": [
+    {
+      "week": 7,
+      "target": "Passengers booked on Kestrel flights to or from Orlando or Philadelphia between December 21 and December 27",
+      "target_rule": "week8_base",
+      "actions": [
+        {"action": "Backup ground handling contract at both bases for the strike days", "level": "on"},
+        {"action": "Rebooking deal with a partner airline for 2 disrupted weeks", "level": "on"},
+        {"action": "Free changes and cancellations for bookings in a 2-week window", "level": "on"}
+      ],
+      "message": "Kestrel Air update: workers at our ground handling contractor in Orlando and Philadelphia plan a 48-hour strike on Dec 22-23. We have hired a backup ground handling team for both airports, but some flights may still be late or canceled. If you are booked between Dec 14 and Dec 27, you can change or cancel for free in the app now. If your flight is canceled, we will rebook you on Kestrel or a partner airline, or give you a full refund if you prefer. We will text you first if anything changes.",
+      "channels": ["app", "email", "text message"],
+      "why": "Own seats in week 8 are 97% booked, so most strike-day passengers can only be protected by moving early or by a partner airline.\nThe backup contract lowers cancellations on the days that count for goal 2 and insures against an extension that would count for goal 1.\nTelling people a week ahead, honestly, is what the CEO says passengers remember."
+    },
+    {
+      "week": 9,
+      "target": "Passengers whose Kestrel flight was canceled or delayed more than 3 hours between December 21 and December 27",
+      "target_rule": "affected",
+      "actions": [
+        {"action": "Goodwill for affected passengers, up to 10,000 passengers", "level": "a $75 travel credit"},
+        {"action": "Extra airport and call-center staff for 2 weeks", "level": "on"},
+        {"action": "Double loyalty points for affected passengers", "level": "on"}
+      ],
+      "message": "Kestrel Air: we are sorry the Dec 22-23 strike disrupted your holiday trip. We have added a $75 Kestrel travel credit and double Kestrel Club points for that trip to your account. Extra staff are at our Orlando and Philadelphia airports and on our phone lines through January 10. If you are owed a refund, it is being paid automatically to your original payment method.",
+      "channels": ["app", "email"],
+      "why": "Complaints and NPS are judged against last winter, and the disrupted passengers are where both are made or lost.\nA travel credit costs less than cash and is mostly used on seats that would fly empty.\nExtra staff shorten the wait when people call back after the holidays."
+    }
+  ]
+}
