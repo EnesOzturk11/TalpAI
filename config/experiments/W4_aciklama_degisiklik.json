@@ -1,0 +1,25 @@
+{
+  "_label": "W4 · Açıklama + ücretsiz değişiklik",
+  "_blurb": "Resmi açıklama + isteyene 2 hafta ücretsiz değişiklik/iptal",
+  "decisions": [
+    {
+      "week": 4,
+      "target": "All Kestrel Air passengers and followers",
+      "target_rule": "all",
+      "channels": [
+        "app",
+        "email",
+        "text message",
+        "social media"
+      ],
+      "actions": [
+        {
+          "action": "Free changes and cancellations for bookings in a 2-week window",
+          "level": "on"
+        }
+      ],
+      "message": "Kestrel Air: you may have seen a video of mechanics working on one of our engines. The FAA and the engine maker asked airlines to inspect a part on one engine type, as a precaution. No Kestrel aircraft has had a problem with this part. We are inspecting the aircraft that use it now, and a few flights may be delayed while we do. Safety comes first. If you would rather not fly in the next two weeks, you can change or cancel your booking for free in the app.",
+      "why": "Nervous flyers get a way out instead of a reason to leave for good.\nThe honest facts plus a choice are what passengers remember.\nIt costs $0.2M."
+    }
+  ]
+}

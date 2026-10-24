@@ -1,0 +1,25 @@
+{
+  "_label": "W4 · Açıklama + ek personel",
+  "_blurb": "Resmi açıklama (herkese, sosyal medya dahil) + 2 hafta ek havalimanı ve çağrı merkezi personeli",
+  "decisions": [
+    {
+      "week": 4,
+      "target": "All Kestrel Air passengers and followers",
+      "target_rule": "all",
+      "channels": [
+        "app",
+        "email",
+        "text message",
+        "social media"
+      ],
+      "actions": [
+        {
+          "action": "Extra airport and call-center staff for 2 weeks",
+          "level": "on"
+        }
+      ],
+      "message": "Kestrel Air: you may have seen a video of mechanics working on one of our engines. The FAA and the engine maker asked airlines to inspect a part on one engine type, as a precaution. No Kestrel aircraft has had a problem with this part. We are inspecting the aircraft that use it now, and a few flights may be delayed while we do. Safety comes first. Extra staff are at our airports and on our phone lines if you need help.",
+      "why": "A viral video without an answer from us is the real risk; the facts are reassuring and we should say them first.\nExtra staff keep any inspection delays from turning into long waits.\nIt costs $0.15M and leaves the budget for the strike."
+    }
+  ]
+}

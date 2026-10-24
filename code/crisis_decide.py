@@ -41,7 +41,7 @@ ACTIONS = {  # dossier wording -> levels
     "Double loyalty points for affected passengers": ["on"],
     "Merge low-load flights, announced at least 7 days ahead": ["on"],
 }
-NOT_MODELED = ("lease an aircraft", "fare cap", "fare sale", "merge low-load")
+NOT_MODELED = ("fare cap", "fare sale", "merge low-load")
 THRESHOLDS = {"goal_1": 98.0, "goal_4": 96.0, "goal_3": 12.0}
 
 

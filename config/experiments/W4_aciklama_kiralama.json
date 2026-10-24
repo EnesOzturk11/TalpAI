@@ -1,0 +1,25 @@
+{
+  "_label": "W4 · Açıklama + kiralık uçak",
+  "_blurb": "Resmi açıklama + muayeneler sürerken 1 kiralık uçak (mürettebatlı, 2 hafta)",
+  "decisions": [
+    {
+      "week": 4,
+      "target": "All Kestrel Air passengers and followers",
+      "target_rule": "all",
+      "channels": [
+        "app",
+        "email",
+        "text message",
+        "social media"
+      ],
+      "actions": [
+        {
+          "action": "Lease an aircraft with crew for 2 weeks",
+          "level": "1 aircraft"
+        }
+      ],
+      "message": "Kestrel Air: you may have seen a video of mechanics working on one of our engines. The FAA and the engine maker asked airlines to inspect a part on one engine type, as a precaution. No Kestrel aircraft has had a problem with this part. We are inspecting the aircraft that use it now, and a few flights may be delayed while we do. Safety comes first. We have leased an extra aircraft with crew to keep your flights running during the checks.",
+      "why": "If checks take aircraft out of service, a spare plane keeps the schedule whole over Thanksgiving week.\nIt protects goal 1 and revenue if the inspections run long.\nIt costs $0.7M."
+    }
+  ]
+}

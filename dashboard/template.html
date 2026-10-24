@@ -123,6 +123,38 @@ svg text{fill:var(--muted);font:11px var(--mono)}
 .badge.ok{color:var(--good);border-color:var(--good)} .badge.no{color:var(--bad);border-color:var(--bad)}
 details.cand{border:1px solid var(--line);border-radius:8px;background:var(--panel);padding:10px 12px}
 details.cand summary{cursor:pointer;font-weight:600}
+.brief{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:clamp(16px,3vw,28px);display:grid;gap:18px}
+.brief .lead{font:600 clamp(1.15rem,2.2vw,1.45rem)/1.35 var(--display);max-width:62ch;text-wrap:balance}
+.brief .lead b{color:var(--amber)}
+.brief h3{font-size:1.1rem}
+.brief p{margin:0;max-width:70ch}
+.findings{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,300px),1fr));gap:14px}
+.finding{border-top:3px solid var(--ink);padding-top:10px;display:grid;gap:6px;min-width:0}
+.finding.bad{border-top-color:var(--bad)} .finding.good{border-top-color:var(--good)}
+.finding .big{font:700 1.6rem/1 var(--display);font-variant-numeric:tabular-nums}
+blockquote.q{margin:0;padding:8px 12px;border-left:3px solid var(--line);font-style:italic;color:var(--ink);font-size:.92rem}
+blockquote.q cite{display:block;font-style:normal;font-size:.78rem;color:var(--muted);margin-top:4px}
+.ask{display:grid;gap:6px;background:var(--amber-soft);border-radius:8px;padding:12px 14px}
+.ask ol{margin:0;padding-left:20px;display:grid;gap:4px}
+.unknowns{margin:0;padding-left:20px;display:grid;gap:6px;max-width:80ch}
+.cmp{min-width:560px}
+.cmp td:first-child{color:var(--muted)}
+.gloss{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,320px),1fr));gap:12px}
+.gl{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:12px 14px;display:grid;gap:6px;min-width:0}
+.gl .name{display:flex;align-items:center;gap:8px;font-weight:700;flex-wrap:wrap}
+.gl p{margin:0;font-size:.9rem}
+.terms{display:grid;grid-template-columns:max-content minmax(0,1fr);gap:6px 16px;font-size:.92rem;margin:0}
+.terms dt{font:600 .85rem var(--mono)} .terms dd{margin:0;min-width:0}
+@media (max-width:560px){.terms{grid-template-columns:minmax(0,1fr)} .terms dd{margin-bottom:6px}}
+.acodes{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,260px),1fr));gap:6px 16px;font-size:.88rem}
+.acodes div{display:flex;gap:8px;align-items:baseline}
+.ac{font:700 .78rem/1 var(--mono);padding:3px 6px;border-radius:4px;background:var(--soft);border:1px solid var(--line);min-width:34px;text-align:center}
+.score td.big{font:700 1.05rem var(--mono);font-variant-numeric:tabular-nums}
+.score tr.top td{background:var(--amber-soft)}
+.netbar{display:inline-block;height:8px;border-radius:3px;vertical-align:middle;margin-left:6px}
+.fl td,.fl th{padding:7px 10px;font-size:.86rem}
+.fl tr.wk td{background:var(--soft);font-weight:700}
+.fl .code{font:700 .8rem var(--mono)}
 .caveat{font-size:.85rem;color:var(--muted);border-left:3px solid var(--line);padding-left:10px}
 @media (prefers-reduced-motion:reduce){*{transition:none!important}}
 </style>
@@ -136,6 +168,21 @@ details.cand summary{cursor:pointer;font-weight:600}
     </div>
     <div class="board" id="deadlines" aria-label="Kilit saatleri (İstanbul)"></div>
   </header>
+
+  <section>
+    <div class="head"><h2>Karne: hangi çözüm ne kadar iyi?</h2><span class="note">Sıralama: karar yok'a göre net kazanç</span></div>
+    <div class="tablebox"><table class="score"><thead><tr><th>#</th><th>Çözüm (kullandığı aksiyonlar)</th><th>Maliyet</th><th>Uçuş geliri W5–10</th><th>Net kazanç vs karar yok</th><th>Kızgın yorum</th><th>Memnun yorum</th><th>Başka havayolu</th><th>Uçuşunu kaydıran</th></tr></thead><tbody id="scoreBody"></tbody></table></div>
+    <div class="caveat">Uçuş geliri: planlanan W5–10 bilet gelirinin Kestrel'de uçulan kısmı (persona ağırlıklı). Net kazanç = (gelir farkı × plan ≈ $180M) − maliyet; dossier rakamlarından türetilmiş tahmin. Kızgın yorum: personanın o hafta tavsiye puanı 0–4 iken yazdığı mesajların payı; memnun: 7–10. Aralıklar iki seed'dir.</div>
+    <div class="card"><h3>Aksiyon kodları</h3><div class="acodes" id="acodes"></div><div class="note">Çözüm adları şu biçimde: <b>W7 · A3+A5</b> = 7. haftada devreye giren, A3 ve A5 aksiyonlarını kullanan tek karar.</div></div>
+  </section>
+
+  <section class="brief" id="brief" aria-label="CEO brifingi"></section>
+
+  <section>
+    <div class="head"><h2>Sözlük: seçenekler ve terimler</h2><span class="note">Tablodaki bir seçeneğin adının üzerine gelince de kısa açıklama görünür</span></div>
+    <div class="gloss" id="gloss"></div>
+    <div class="card"><h3>Terimler</h3><dl class="terms" id="terms"></dl></div>
+  </section>
 
   <section>
     <div class="head"><h2>Krizler ve okumamız</h2><span class="note" id="updated"></span></div>
@@ -174,6 +221,17 @@ details.cand summary{cursor:pointer;font-weight:600}
     </section>
     <section class="card" id="detail"></section>
   </div>
+
+  <section>
+    <div class="head"><h2>Uçuşlar ve gelirleri</h2><span class="note" id="flNote"></span></div>
+    <div class="filters">
+      <label class="note" for="flPkg">Çözüm</label><select id="flPkg"></select>
+      <label class="note" for="flSeed">Seed</label><select id="flSeed"><option value="1">1</option><option value="2">2</option></select>
+      <label class="note" for="flWeek">Hafta</label><select id="flWeek"></select>
+    </div>
+    <div class="tablebox"><table class="fl"><thead><tr><th>Uçuş</th><th>Tarih</th><th>Güzergâh</th><th>Yolcu</th><th>Ne oldu</th><th>Yolcunun kararı</th><th>Gelir / plan</th></tr></thead><tbody id="flBody"></tbody></table></div>
+    <div class="caveat">Uçuş kodu: W8.3 = 8. haftanın tarihe göre 3. uçuşu. Gelir, örneklemdeki biletin (ücret × kişi) Kestrel'de kalan kısmıdır; iptalde yolcu Kestrel'le yeniden rezervasyon yaparsa gelir kalır, iade alır ya da başka havayoluna geçerse gider. Grev günlerinde iptal simülasyonda bilerek daha sık zarlanır (önem örneklemesi); metrikler bunu düzeltir, bu liste ham zarları gösterir.</div>
+  </section>
 
   <section>
     <div class="head"><h2>Hangi karar hangi sonucu getirdi</h2><span class="note">Çubuk: iki seed ortalaması · ince çizgi: karar yok</span></div>
@@ -216,6 +274,12 @@ details.cand summary{cursor:pointer;font-weight:600}
 const DATA = /*__DATA__*/null;
 const PK_ORDER = ["nodecision", ...Object.keys(DATA.packages).filter(k=>k!=="nodecision")];
 const COLORS = Object.fromEntries(PK_ORDER.map((k,i)=>[k,"--c"+(i%9+1)]));
+const ACT_CODES = [["A1","lease an aircraft","Uçak kiralama (mürettebatlı, 2 hafta)","$0,7M / uçak"],["A2","backup ground handling","Yedek yer hizmetleri (grev günleri)","$0,5M"],
+  ["A3","free changes","Ücretsiz tarih değişikliği / iptal (2 hafta)","$0,2M"],["A4","goodwill","Telafi: $75 kredi ya da $50 nakit","$0,3M / $0,5M"],["A5","rebooking deal","Partner havayoluyla yeniden rezervasyon","$0,25M"],
+  ["A6","hotel rooms","Mahsur kalanlara otel","$0,2M"],["A7","extra airport","Ek havalimanı ve çağrı merkezi personeli","$0,15M"],["A8","fare cap","Yoğun rotalarda fiyat tavanı","$0,5M"],
+  ["A9","fare sale","Sakin rotalarda indirim","$0,3M"],["A10","double loyalty","Etkilenenlere çift puan","$0,1M"],["A11","merge low-load","Düşük doluluklu uçuşları birleştirme","+$0,25M"]];
+const actCode = a => { const n=a.action.toLowerCase(); const c=ACT_CODES.find(x=>n.startsWith(x[1])); if(!c) return "?"; return c[0]+(c[0]==="A1"?"×"+(a.level||"1").replace(/\D/g,""):c[0]==="A4"?(a.level.includes("$75")?"($75)":"($50)"):""); };
+for (const [k,P] of Object.entries(DATA.packages)){ P.friendly=P.label; const d=P.decisions[0]; P.label = d ? `W${d.week} · ${d.actions.map(actCode).join("+")}` : "Karar yok"; }
 const decWeek = pkg => DATA.packages[pkg]?.decisions?.[0]?.week || null;
 const decActs = pkg => (DATA.packages[pkg]?.decisions?.[0]?.actions||[]).map(a=>a.action.replace(/ for (2 (disrupted )?weeks|the strike days|bookings in a 2-week window)|, (whatever the cause|up to 10,000 passengers)/g,"")+(a.level!=="on"?` (${a.level})`:"")).join(" + ");
 const DEADLINES = [["W7 kilit","16:00"],["W8 kilit","16:30"],["W9 kilit","17:00"],["W10 kilit","17:30"],["ZIP","18:00"],["Sunum","18:30"]];
@@ -253,6 +317,7 @@ function renderRows(){
     const tr=el("tr",{tabindex:"0"}); if(pkg===S.sel) tr.classList.add("sel");
     tr.onclick=()=>{S.sel=pkg; renderAll();}; tr.onkeydown=e=>{ if(e.key==="Enter"){S.sel=pkg; renderAll();} };
     const wk=decWeek(pkg);
+    tr.title = optInfo(pkg).what;
     const name=el("td",{},el("div",{class:"pk"},el("span",{class:"dot",style:`background:var(${COLORS[pkg]})`}), wk?el("span",{class:"wk",text:"W"+wk}):null, P.label),
       el("div",{class:"blurb",text: pkg==="nodecision" ? P.blurb : decActs(pkg)}));
     const g4=rangeOf(rs,r=>r.goals.goal_4); const d4 = b4!=null && pkg!=="nodecision" ? mean(rs.map(r=>r.goals.goal_4))-b4 : null;
@@ -358,6 +423,7 @@ function renderChat(){
 }
 let myChat=[];
 async function connect(){
+  if (!window.claude?.use){ $("chatState").textContent="Paylaşılan oylar ve sohbet yalnızca claude.ai üzerinde açılınca çalışır."; return; }
   const [db,user]=await Promise.all([claude.use("db"), claude.use("user")]);
   S.user=user; if (!db){ $("chatState").textContent="Paylaşılan oylar ve sohbet bu görünümde kullanılamıyor."; renderRows(); return; }
   S.db=db; S.me = user ? await user.id() : null;
@@ -450,6 +516,135 @@ function renderCrisisDecisions(){
       det.append(dl, msg, cp, el("div",{class:"msg",text:d.why})); box.append(det); }
   }
 }
+const OPTION_INFO = {
+  W4_aciklama_personel: {when:"W4 = 23–29 Kasım (Şükran Günü haftası), motor muayenesi duyurusundan sonraki ilk hafta", what:"Herkese giden resmi açıklama (app, e-posta, SMS, sosyal medya): muayene önlem amaçlı, hiçbir Kestrel uçağında sorun çıkmadı. Yanında 2 hafta ek personel.", why:"Viral videoya dürüst bir açıklamayla cevap vermek yeterli mi?"},
+  W4_aciklama_degisiklik: {when:"W4 = 23–29 Kasım", what:"Aynı resmi açıklama; ayrıca uçmak istemeyenlere 2 hafta ücretsiz değişiklik/iptal.", why:"Gergin yolcuya çıkış yolu sunmak kaçışı azaltır mı?"},
+  W4_aciklama_kiralama: {when:"W4 = 23–29 Kasım", what:"Aynı resmi açıklama; ayrıca muayeneler sürerken seferleri korumak için 1 mürettebatlı kiralık uçak.", why:"Muayeneler uzarsa programı korumak parasına değer mi?"},
+  nodecision: {when:"—", what:"Hiçbir aksiyon alınmıyor. Kestrel olağan politikasıyla devam ediyor: iptal edilen yolcu, bir sonraki boş Kestrel uçuşuna alınıyor ya da parası iade ediliyor.", why:"Karşılaştırma noktası. Her seçenek buna göre iyi ya da kötü."},
+  W7_kalkan: {when:"W7 = 14–20 Aralık, grevden bir hafta önce", what:"\"Kalkan\": grevden önce üç koruma birden. Yedek yer hizmetleri ekibi (iptalleri azaltır), partner havayoluyla yeniden rezervasyon (iptal olursa aynı gün yer) ve 2 haftalık ücretsiz tarih değişikliği (yolcu grev gününden kendisi kaçabilir).", why:"En kapsamlı ön koruma ne kadar fark yaratıyor?"},
+  W7_yalin: {when:"W7 = 14–20 Aralık, grevden bir hafta önce", what:"\"Yalın\": Kalkan'ın yedek ekip sözleşmesi çıkarılmış hali. Yalnızca ücretsiz tarih değişikliği ve partner havayolu; mesaj yolcuyu uçuşunu kaydırmaya çağırıyor.", why:"$0,5M'lık yedek ekip sözleşmesi parasına değiyor mu?"},
+  W7_yalniz_degisiklik: {when:"W7 = 14–20 Aralık", what:"Tek aksiyon: 2 haftalık ücretsiz değişiklik/iptal. Mesaj 21 ve 24 Aralık'ta yer olduğunu söylüyor.", why:"En ucuz aksiyon ($0,2M) tek başına ne kadar iş görüyor?"},
+  W7_yalniz_partner: {when:"W7 = 14–20 Aralık", what:"Tek aksiyon: partner havayoluyla yeniden rezervasyon anlaşması. İptal olan yolcu başka havayolunda aynı gün yer bulabiliyor.", why:"G2 (24 saatte yeniden rezervasyon) hedefini tek başına kurtarır mı?"},
+  W7_yalniz_yedek: {when:"W7 = 14–20 Aralık", what:"Tek aksiyon: grev günleri için yedek yer hizmetleri sözleşmesi. Mesaj grevi ve yedek ekibi duyuruyor ama yolcuya bir seçenek sunmuyor.", why:"Sorunun kaynağını (iptalleri) azaltmak yeterli mi?"},
+  W8_kalkan_gec: {when:"W8 = 21–27 Aralık, grev haftasının başı", what:"Kalkan'ın aynısı, ama bir hafta geç: mesaj grevden bir gün önce ulaşıyor.", why:"Zamanlama ne kadar önemli?"},
+  W8_grev_gunu: {when:"W8 = 21–27 Aralık", what:"Grev günü bakımı: mahsur kalanlara otel, havalimanı ve çağrı merkezinde ek personel, etkilenenlere $75 kredi. Grev günü uçacak yolcuları hedefliyor.", why:"Önleme yerine o gün iyi bakmak yeter mi?"},
+  W9_telafi: {when:"W9 = 28 Aralık–3 Ocak, grevden sonra", what:"Telafi: grevden etkilenenlere $75 kredi, çift sadakat puanı ve 2 hafta ek personel.", why:"Olay bittikten sonra özür ve hediye müşteriyi geri kazanır mı?"},
+};
+const TERMS = [
+  ["W1 … W10","Şirket takvimindeki haftalar: W1 = 2–8 Kasım … W10 = 4–10 Ocak. Bugün her 30 dakika bir hafta. Grev W8'de (22–23 Aralık). Seçenek adındaki W, kararın devreye girdiği haftadır."],
+  ["Kilit saati","Bir kararın, haftası başlamadan önce TALP dashboard'unda kilitlenmesi gerekir: W7 için 16:00, W8 16:30, W9 17:00, W10 17:30."],
+  ["G1","Board hedefi: grev günleri hariç planlanan uçuşların en az %98'i yapılsın. Filo modelinden ölçülüyor."],
+  ["G2","Board hedefi: aksaklık günlerinde etkilenen yolcuların en az %90'ı 24 saat içinde yeniden rezervasyon ya da iade alsın. Uçuşu iptal olan personalardan ölçülüyor; örneklem küçük, güven aralığı geniş."],
+  ["G3 NPS","Net tavsiye skoru: personaların her hafta verdiği 0–10 tavsiye puanından. 1. hafta dossier'deki +12'ye sabitlenir; değişim simülasyondan gelir. Board hedefi: geçen kıştan kötü olmasın."],
+  ["Şikâyet endeksi","Kestrel'e ya da DOT'a şikâyet edilen persona-haftaların ağırlıklı yüzdesi. Mutlak şikâyet sayısı değil; seçenekler arasında ve 'Karar yok'la karşılaştırılarak okunur. Düşük iyi."],
+  ["G4","Board hedefi: 5–10. haftalar arasındaki gelir planın en az %96'sı olsun. Kestrel'de uçulan bilet geliri, planlanan gelire oranlanıyor."],
+  ["Başka havayolu","Simülasyon sonunda başka bir havayoluna geçmiş müşterilerin ağırlıklı payı."],
+  ["Uçuşunu kaydıran","Uçuşunu grev gününden kendi isteğiyle başka bir güne alan persona sayısı. Ücretsiz değişiklik sunulmadan pek kimse kaydırmıyor."],
+  ["Seed","Aynı deneyin farklı rastgelelikle tekrar koşulması. Her seçenek iki seed ile koşuldu; tablodaki aralıklar (ör. %94–98) iki seed'in sonucudur. Aralık genişse sonuç gürültülüdür."],
+  ["Okuma","Belirsiz bir kriz duyurusunun nasıl yorumlandığı. Yeni krizlerde hafif, orta ve ağır olmak üzere üç okuma test edilir; öneri en kötü okumaya göre yapılır."],
+  ["Temel / Ağır grev","Temel: grev günlerinde üs uçuşlarının ~%25'i iptal. Ağır: ~%50 iptal, 5 saat rötar ve grev 24 Aralık'a uzuyor."],
+  ["Persona","Kestrel müşterisini temsil eden sentetik bir kişi (36 kişi, 5 grup). Her persona haftalık yolcuların belli bir dilimini temsil eder; gerçek kişi değildir."],
+  ["Anket","Her personaya simülasyondan önce ve 10. haftadan sonra 8 check-in sorusu soruldu (1–5). 2b ve 4b ters sorulmuştur: yüksek puan kötüdür."],
+];
+function optInfo(pkg){ return OPTION_INFO[pkg] || {when: decWeek(pkg)?`W${decWeek(pkg)}`:"—", what: DATA.packages[pkg]?.blurb||"", why:""}; }
+function renderGlossary(){
+  const box=$("gloss"); box.textContent="";
+  for (const pkg of PK_ORDER){ const P=DATA.packages[pkg]; const i=optInfo(pkg); const rs=(DATA.runs.base||{})[pkg]||[];
+    const card=el("div",{class:"gl"}, el("div",{class:"name"}, el("span",{class:"dot",style:`background:var(${COLORS[pkg]})`}), P.label, el("span",{class:"muted",text:P.friendly}), rs.length?el("span",{class:"chip",text:"$"+rs[0].cost.toFixed(2)+"M"}):null),
+      el("div",{class:"note",text:"Ne zaman: "+i.when}), el("p",{text:i.what}));
+    if (i.why) card.append(el("p",{class:"muted",text:"Test ettiği soru: "+i.why}));
+    if (P.decisions.length) card.append(el("p",{class:"note",text:"Aksiyonlar: "+decActs(pkg)}));
+    box.append(card); }
+  const dl=$("terms"); dl.textContent=""; for (const [k,v] of TERMS){ dl.append(el("dt",{text:k}), el("dd",{text:v})); }
+}
+function br(pkg, f, d=0, suf="%"){ const rs=(DATA.runs.base||{})[pkg]||[]; if(!rs.length) return "—"; return fmtR(rangeOf(rs,f),d,suf); }
+function brSev(pkg, f, d=0, suf="%"){ const rs=(DATA.runs.severe||{})[pkg]||[]; if(!rs.length) return "—"; return fmtR(rangeOf(rs,f),d,suf); }
+function quote(pkg, pred){
+  for (const r of ((DATA.runs.base||{})[pkg]||[])){ const t=r.talk.find(x=>pred(x,r)); if (t){ const p=DATA.people[t.p]||{name:t.p}; return {text:t.t, who:`${p.name}, ${p.group}${t.where?" · "+t.where:""} · W${t.w}`}; } }
+  return null;
+}
+function q(qt){ return qt ? el("blockquote",{class:"q"}, `“${qt.text.length>260?qt.text.slice(0,257)+"…":qt.text}”`, el("cite",{text:qt.who})) : null; }
+const PLAN_M = 6*210000*142.5/1e6;
+function renderScore(){
+  const B=DATA.runs.base||{}; const nd=B.nodecision? mean(B.nodecision.map(r=>r.goals.goal_4)) : null; const body=$("scoreBody"); body.textContent="";
+  const acodes=$("acodes"); acodes.textContent=""; for (const [c,,tr,cost] of ACT_CODES) acodes.append(el("div",{},el("span",{class:"ac",text:c}),`${tr} · ${cost}`));
+  const share=(rs,lo,hi)=>{ let k=0,n=0; for (const r of rs){ for (const t of r.talk){ n++; if (t.rec>=lo&&t.rec<=hi) k++; } } return n?100*k/n:0; };
+  const rows=PK_ORDER.filter(p=>B[p]).map(p=>{ const rs=B[p]; const g=mean(rs.map(r=>r.goals.goal_4)); const net = nd==null?0:(g-nd)/100*PLAN_M - rs[0].cost; return {p,rs,g,net}; }).sort((a,b)=>b.net-a.net);
+  const maxAbs=Math.max(1,...rows.map(r=>Math.abs(r.net)));
+  rows.forEach((x,i)=>{ const P=DATA.packages[x.p];
+    const netTd=el("td",{class:"big"}, `${x.net>=0?"+":"−"}$${Math.abs(x.net).toFixed(1)}M`); const bar=el("span",{class:"netbar"}); bar.style.width=Math.round(60*Math.abs(x.net)/maxAbs)+"px"; bar.style.background=x.net>=0?"var(--good)":"var(--bad)"; netTd.append(bar);
+    const tr=el("tr",{class:(i===0?"top ":"")+(x.p===S.sel?"sel":"")}); tr.title=optInfo(x.p).what; tr.onclick=()=>{S.sel=x.p; renderAll();};
+    tr.append(el("td",{class:"num",text:String(i+1)}), el("td",{},el("div",{class:"pk"},el("span",{class:"dot",style:`background:var(${COLORS[x.p]})`}),P.label), el("div",{class:"blurb",text:P.friendly+(P.decisions.length?" · "+P.decisions[0].actions.map(a=>actCode(a)+" "+(ACT_CODES.find(c=>a.action.toLowerCase().startsWith(c[1]))?.[2]||a.action)).join(", "):"")})),
+      el("td",{class:"num",text:"$"+x.rs[0].cost.toFixed(2)+"M"}), el("td",{class:"big",text:fmtR(rangeOf(x.rs,r=>r.goals.goal_4),0,"%")}), netTd,
+      el("td",{class:"num",text:share(x.rs,0,4).toFixed(0)+"%"}), el("td",{class:"num",text:share(x.rs,7,10).toFixed(0)+"%"}),
+      el("td",{class:"num",text:fmtR(rangeOf(x.rs,r=>r.mix["moved to another airline"]),0,"%")}), el("td",{class:"num",text:String(new Set(x.rs.flatMap(r=>r.moved)).size)}));
+    body.append(tr); });
+}
+const OUT_TR={ok:"zamanında",delay:"rötar",cancel:"İPTAL"};
+function initFlights(){ const fp=$("flPkg"); for (const p of PK_ORDER) fp.append(el("option",{value:p,text:DATA.packages[p].label+" · "+DATA.packages[p].friendly}));
+  const fw=$("flWeek"); fw.append(el("option",{value:"",text:"tümü"})); for (let w=1;w<=10;w++) fw.append(el("option",{value:String(w),text:"W"+w}));
+  fp.value=S.sel; for (const id of ["flPkg","flSeed","flWeek"]) $(id).addEventListener("input", renderFlights); }
+function renderFlights(){
+  const pkg=$("flPkg").value||S.sel, seed=+$("flSeed").value, wk=$("flWeek").value; const run=runs(pkg).find(r=>r.seed===seed)||runs(pkg)[0]; const body=$("flBody"); body.textContent="";
+  if (!run||!run.flights){ body.append(el("tr",{},el("td",{colspan:"7",text:"Bu senaryoda uçuş verisi yok."}))); $("flNote").textContent=""; return; }
+  const fl=run.flights.filter(f=>!wk||f.w===+wk); let rev=0, plan=0;
+  for (const w of [...new Set(fl.map(f=>f.w))]){ const ws=fl.filter(f=>f.w===w); const wr=ws.reduce((a,f)=>a+f.rev,0), wp=ws.reduce((a,f)=>a+f.plan,0); rev+=wr; plan+=wp;
+    body.append(el("tr",{class:"wk"}, el("td",{text:`W${w}`}), el("td",{colspan:"5",text:`${ws.length} uçuş`}), el("td",{class:"num",text:`$${wr.toLocaleString("en-US")} / $${wp.toLocaleString("en-US")}`})));
+    for (const f of ws){ const p=DATA.people[f.p]||{name:f.p}; const [st,cls]=STATUS_TR[f.st]||[f.st,""];
+      const out = f.out==="cancel" ? "İPTAL"+(f.r24?" · 24 saatte yer teklifi":" · ~3 gün sonra yer") : f.out==="delay" ? `${Math.round(f.dh)} sa rötar` : "zamanında";
+      body.append(el("tr",{}, el("td",{class:"code",text:f.code}), el("td",{class:"num",text:f.d.slice(5)+(f.orig?` (önce ${f.orig.slice(5)})`:"")}), el("td",{text:`${f.fr}→${f.to}`}),
+        el("td",{text:`${p.name} · ${f.n} kişi`}), el("td",{},el("span",{class:"chip "+(f.out==="cancel"?"bad":f.out==="delay"?"warn":"good"),text:out})), el("td",{},el("span",{class:"chip "+cls,text:st})),
+        el("td",{class:"num",text:`$${f.rev.toLocaleString("en-US")} / $${f.plan.toLocaleString("en-US")}`}))); } }
+  $("flNote").textContent = `${DATA.packages[pkg].label} · seed ${seed} · ${fl.length} uçuş · gelir $${rev.toLocaleString("en-US")} / plan $${plan.toLocaleString("en-US")} (${plan?Math.round(100*rev/plan):0}%)`;
+}
+function renderBrief(){
+  const box=$("brief"); box.textContent=""; const B=DATA.runs.base||{};
+  const ok = ["nodecision","W7_kalkan","W7_yalin","W7_yalniz_yedek","W8_kalkan_gec","W9_telafi"].every(k=>B[k]);
+  if (!ok){ box.append(el("p",{class:"note",text:"Brifing için gereken deneyler henüz yok."})); return; }
+  const rev=r=>r.goals.goal_4, oth=r=>r.mix["moved to another airline"], cmp=r=>r.goals.goal_3b, nps=r=>r.goals.goal_3;
+  const moved=pkg=>new Set((B[pkg]||[]).flatMap(r=>r.moved)).size;
+  const meanOf=(pkg,f)=>mean((B[pkg]||[]).map(f));
+  const best = meanOf("W7_kalkan",rev) >= meanOf("W7_yalin",rev) ? "W7_kalkan" : "W7_yalin";
+  box.append(el("div",{class:"eyebrow",text:`CEO brifingi · deneyler ${DATA.updated} itibarıyla · 36 sentetik müşteri, her seçenek 2 kez`}));
+  const lead=el("div",{class:"lead"}); lead.append("Grevden bir hafta önce (W7, 14 Aralık) grev haftası yolcularına dürüstçe haber verin ve ", el("b",{text:"tarihlerini ücretsiz değiştirme"}), " imkânı sunun. Bu kararı en geç bugün 16:00'da kilitlememiz gerekiyor."); box.append(lead);
+
+  const f=el("div",{class:"findings"});
+  f.append(el("div",{class:"finding bad"}, el("div",{class:"eyebrow",text:"Bir şey yapmazsak"}), el("div",{class:"big",text:br("nodecision",rev)}), el("p",{text:`planlanan gelirin bu kadarı kalıyor (hedef %96); müşterilerin ${br("nodecision",oth)}'i başka havayoluna geçiyor ve iptaller grev sabahı habersiz yaşanıyor.`}),
+    q(quote("nodecision",(t)=>t.w===8 && t.fl.some(x=>x.startsWith("İPTAL"))))));
+  f.append(el("div",{class:"finding good"}, el("div",{class:"eyebrow",text:"1 · Erken haber + seçenek işi çözüyor"}), el("div",{class:"big",text:br(best,rev)}), el("p",{text:`W7'de ücretsiz değişiklik sunulunca ${moved(best)} persona uçuşunu kendisi grev gününden kaydırıyor; başka havayoluna kaçış ${br(best,oth)}'e iniyor.`}),
+    q(quote(best,(t,r)=>t.w===7 && r.moved.includes(t.p)))));
+  f.append(el("div",{class:"finding bad"}, el("div",{class:"eyebrow",text:"2 · Seçeneksiz uyarı ters tepiyor"}), el("div",{class:"big",text:br("W7_yalniz_yedek",oth)}), el("p",{text:`"Grev var ama yedek ekip tuttuk" deyip seçenek sunmayınca başka havayoluna geçiş bu kadar; karar vermeyince ${br("nodecision",oth)}.`}),
+    q(quote("W7_yalniz_yedek",(t)=>t.w>=7 && t.st==="moved to another airline"))));
+  f.append(el("div",{class:"finding"}, el("div",{class:"eyebrow",text:"3 · Geç kalınca para işe yaramıyor"}), el("div",{class:"big",text:`${moved("W8_kalkan_gec")} kişi`}), el("p",{text:`aynı paket grev haftasında (W8) verilince uçuşunu kaydırabiliyor; gelir ${br("W8_kalkan_gec",rev)}. Grevden sonra $75 kredi (W9 Telafi) geliri ${br("W9_telafi",rev)}'de bırakıyor.`}),
+    q(quote("W9_telafi",(t)=>t.w>=9 && t.rec<=4))));
+  box.append(f);
+
+  box.append(el("h3",{text:"Masadaki iki seçenek"}));
+  const tb=el("div",{class:"tablebox"}); const tbl=el("table",{class:"cmp"});
+  tbl.append(el("thead",{},el("tr",{},el("th",{text:""}),el("th",{text:DATA.packages.W7_kalkan.label+" (Kalkan)"}),el("th",{text:DATA.packages.W7_yalin.label+" (Yalın)"}))));
+  const rows=[["Ne içeriyor","Yedek yer hizmetleri + partner + ücretsiz değişiklik","Partner + ücretsiz değişiklik"],
+    ["Maliyet","$"+B.W7_kalkan[0].cost.toFixed(2)+"M","$"+B.W7_yalin[0].cost.toFixed(2)+"M"],
+    ["Gelir (temel / ağır grev)",`${br("W7_kalkan",rev)} / ${brSev("W7_kalkan",rev)}`,`${br("W7_yalin",rev)} / ${brSev("W7_yalin",rev)}`],
+    ["Başka havayoluna geçen",br("W7_kalkan",oth),br("W7_yalin",oth)],
+    ["Şikâyet endeksi",br("W7_kalkan",cmp,1,""),br("W7_yalin",cmp,1,"")],
+    ["NPS",br("W7_kalkan",nps,0,""),br("W7_yalin",nps,0,"")],
+    ["Uçuşunu kaydıran",String(moved("W7_kalkan")),String(moved("W7_yalin"))],
+    ["Sürprizlere kalan bütçe","$"+(3-B.W7_kalkan[0].cost).toFixed(2)+"M","$"+(3-B.W7_yalin[0].cost).toFixed(2)+"M"]];
+  const body=el("tbody"); for (const [a,b,c] of rows) body.append(el("tr",{},el("td",{text:a}),el("td",{class:"num",text:b}),el("td",{class:"num",text:c}))); tbl.append(body); tb.append(tbl); box.append(tb);
+  box.append(el("p",{text: best==="W7_kalkan"
+    ? "Öneri Kalkan: bu deneylerde gelir ortalaması daha yüksek ve grevin uzamasına karşı sigorta. Yalın $0,5M daha ucuz ve ağır senaryoda benzer sonuç veriyor; bütçeyi bilinmeyen krizlere saklamak istersek Yalın."
+    : "Öneri Yalın: bu deneylerde gelir ortalaması daha yüksek ve $0,5M daha ucuz. Kalkan grevin uzamasına karşı ek sigorta sağlıyor; risk iştahımız düşükse Kalkan."}));
+
+  box.append(el("h3",{text:"Neyi bilmiyoruz"}));
+  const u=el("ul",{class:"unknowns"});
+  for (const x of ["G2 (yolcuların %90'ının 24 saatte yeniden rezervasyonu) hiçbir seçenekte güvenilir biçimde tutmuyor; örneklem küçük ve W8'de koltukların %97'si dolu. Board'a bunu açıkça söyleyelim.",
+                   "NPS iki seed arasında çok oynuyor: yön güvenilir, rakamın kendisi değil.",
+                   "Ankette personalar iki farklı biçimde sorulan güven sorusuna (1a ve 1b) aynı puanı veriyor; ankette mekanik cevap riski var, tek başına kanıt olarak sunmayalım.",
+                   "Uçak kiralama, fiyat tavanı/indirimi ve uçuş birleştirme simülasyonda henüz etkisiz; bunları değerlendiremiyoruz.",
+                   "Sürpriz krizler henüz gelmedi. Duyuru gelince sistem 3 okuma ve 4 aday karar üretip ~8 dakikada test ediyor; 2. kararı buna saklıyoruz."]) u.append(el("li",{text:x}));
+  box.append(u);
+  box.append(el("div",{class:"ask"}, el("h3",{text:"Sizden istediğimiz"}), el("ol",{}, el("li",{text:"1. karar için Kalkan mı, Yalın mı? 16:00'dan önce kilitlenmeli."}), el("li",{text:"2. karar ve kalan bütçe ($2–2,5M) sürpriz krizlere ayrılsın; 'Kriz kararları' bölümü duyurudan ~10 dakika sonra öneri verir."}))));
+}
 function renderCrises(){
   const box=$("crises"); box.textContent="";
   $("updated").textContent = `Deneyler ${DATA.updated} itibarıyla · ${DATA.crises.length} kriz`;
@@ -462,9 +657,13 @@ function renderCrises(){
     for (const u of c.updates) card.append(el("p",{class:"muted",text:`W${u.week} güncelleme: ${u.text}`}));
     box.append(card); }
 }
-function renderAll(){ renderScen(); renderRows(); renderChart(); renderDetail(); renderBars(); renderSurvey(); if(!$("fPkg").dataset.touched){ $("fPkg").value=S.sel; } renderFeed(); }
+function renderAll(){ renderScen(); renderRows(); renderChart(); renderDetail(); renderBars(); renderSurvey(); if($("flPkg").options.length){ renderScore(); renderFlights(); } if(!$("fPkg").dataset.touched){ $("fPkg").value=S.sel; } renderFeed(); }
 initFilters(); $("fPkg").addEventListener("change",()=>{$("fPkg").dataset.touched="1";});
 renderDeadlines(); setInterval(renderDeadlines, 30000);
+renderScore();
+initFlights();
+renderBrief();
+renderGlossary();
 renderCrises();
 renderCrisisDecisions();
 renderAll();

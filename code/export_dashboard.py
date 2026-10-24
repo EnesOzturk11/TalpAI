@@ -62,6 +62,22 @@ def main():
                         + f" {o['from']}→{o['to']}" for o in r["flights"]]}
                 for r in W if r["what_you_said_or_posted"].strip()]
         moved = sorted({r["persona"] for r in W if "change to a different date" in r["actions"]})
+        flights = []
+        for r in W:
+            for o in r["flights"]:
+                trip = next((t for t in personas[r["persona"]]["trips"] if t["from"] == o["from"] and t["to"] == o["to"]), None)
+                fare, party = (trip["fare_usd"], trip["party"]) if trip else (0, 1)
+                kept = r["status"] in ("flies as planned", "rebooked")
+                flights.append({"w": r["week"], "d": o["date"], "fr": o["from"], "to": o["to"], "p": r["persona"], "n": party,
+                                "orig": trip["date"] if trip and trip["date"] != o["date"] else "",
+                                "out": "cancel" if o["canceled"] else ("delay" if o["delay_hours"] else "ok"),
+                                "dh": o["delay_hours"], "st": r["status"], "plan": fare * party, "rev": fare * party if kept else 0,
+                                "r24": bool(o.get("rebook_within_24h"))})
+        flights.sort(key=lambda f: (f["w"], f["d"], f["p"]))
+        seq = {}
+        for f in flights:
+            seq[f["w"]] = seq.get(f["w"], 0) + 1
+            f["code"] = f"W{f['w']}.{seq[f['w']]}"
         probe = {}
         if (d / "probe.jsonl").exists():
             rows = [json.loads(l) for l in open(d / "probe.jsonl", encoding="utf-8")]
@@ -73,7 +89,7 @@ def main():
         runs.setdefault(scen, {}).setdefault(pkg, []).append({
             "seed": int(seed[1:]), "goals": {k: m[k] for k in ("goal_1", "goal_2", "goal_3", "goal_3b", "goal_4")},
             "g2n": m["detail"]["goal_2_sample"], "mix": m["detail"]["final_status_mix_pct"], "weeks": weeks,
-            "moved": moved, "talk": talk, "probe": probe, "cost": json.loads((d / "run.json").read_text()).get("cost_musd", 0)})
+            "moved": moved, "talk": talk, "probe": probe, "flights": flights, "cost": json.loads((d / "run.json").read_text()).get("cost_musd", 0)})
     packages = {"nodecision": {"label": "Karar yok", "blurb": "Business as usual: Kestrel olağan politikasıyla devam ediyor.",
                                "decisions": [], "cost": 0}}
     for f in sorted((ROOT / "config" / "experiments").glob("*.json")):
